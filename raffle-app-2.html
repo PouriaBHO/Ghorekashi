@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 قرعه‌کشی صندوق</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
+:root{--bg:#0a0a0f;--surface:#12121a;--card:#1a1a26;--border:rgba(255,255,255,0.08);--gold:#fbbf24;--pink:#ec4899;--purple:#a855f7;--cyan:#22d3ee;--red:#ef4444;--green:#22c55e;--text:#f1f5f9;--muted:#64748b;--glow:0 0 40px rgba(251,191,36,0.2);--grad:linear-gradient(135deg,var(--gold),var(--pink),var(--purple))}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;background-image:radial-gradient(ellipse at 20% 20%,rgba(168,85,247,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(251,191,36,0.05) 0%,transparent 60%)}
+/* TABS */
+.main-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 16px;gap:4px;overflow-x:auto;position:sticky;top:0;z-index:100}
+.main-tab{padding:14px 18px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.main-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.main-tab:hover{color:var(--text)}
+.tab-content{display:none}.tab-content.active{display:block}
+/* WRAP */
+.wrap{max-width:620px;margin:0 auto;padding:24px 16px 60px}
+/* HEADER */
+.page-header{text-align:center;margin-bottom:24px}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.page-header h1{font-size:clamp(22px,5vw,34px);font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.page-header p{margin-top:6px;color:var(--muted);font-size:13px}
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-label{font-size:13px;color:var(--muted);font-weight:500}
+/* BUTTONS */
+.btn-ghost{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.btn-primary{width:100%;padding:15px;border-radius:16px;border:none;background:var(--grad);color:white;font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;box-shadow:var(--glow);transition:transform .15s,opacity .2s}
+.btn-primary:hover:not(:disabled){transform:scale(1.02)}
+.btn-primary:active:not(:disabled){transform:scale(.98)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-cyan{background:linear-gradient(135deg,var(--cyan),var(--purple))}
+.btn-red{background:linear-gradient(135deg,#ef4444,#f97316)}
+.btn-green-outline{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);border-radius:20px;color:var(--green);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
+.btn-green-outline:hover{background:rgba(34,197,94,.22)}
+/* MODE SELECTOR */
+.mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:4px;margin-bottom:20px}
+.mode-btn{background:none;border:none;font-family:inherit;padding:12px 14px;border-radius:12px;cursor:pointer;transition:all .2s;text-align:right;color:var(--muted)}
+.mode-btn.active{background:var(--grad);color:#fff;box-shadow:0 4px 20px rgba(251,191,36,.3)}
+.mode-btn-inner{display:flex;justify-content:space-between;align-items:center}
+.mode-title{font-size:14px;font-weight:700}
+.mode-hint{font-size:11px;opacity:.7;margin-top:2px}
+.mode-icon{font-size:18px}
+/* PARTICIPANT */
+.participant-list{display:flex;flex-direction:column;gap:8px;max-height:44vh;overflow-y:auto;padding-right:2px}
+.participant-row{display:flex;align-items:center;gap:7px;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.photo-btn{width:44px;height:44px;flex-shrink:0;border-radius:14px;border:1px dashed rgba(255,255,255,.2);background:rgba(255,255,255,.04);cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px;position:relative;transition:border-color .2s}
+.photo-btn:hover{border-color:var(--gold)}
+.photo-btn img{width:100%;height:100%;object-fit:cover}
+.photo-remove{position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;color:#fff;z-index:2}
+.name-input,.phone-input{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:14px;text-align:right;transition:border-color .2s}
+.name-input{flex:1}.phone-input{width:115px;flex:0 0 115px}
+.name-input:focus,.phone-input:focus{outline:none;border-color:rgba(251,191,36,.4)}
+.name-input::placeholder,.phone-input::placeholder{color:var(--muted);opacity:.6}
+.del-btn{width:38px;height:38px;flex-shrink:0;background:none;border:1px solid var(--border);border-radius:10px;color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.del-btn:hover{color:var(--red);border-color:rgba(239,68,68,.4)}
+.add-row-btn{width:100%;background:none;border:1px dashed rgba(255,255,255,.15);border-radius:12px;padding:12px;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;margin-top:8px;transition:all .2s}
+.add-row-btn:hover{color:var(--text);border-color:rgba(251,191,36,.4)}
+.bulk-area{overflow:hidden;max-height:0;transition:max-height .3s ease}
+.bulk-area.open{max-height:200px}
+.bulk-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:13px;text-align:right;resize:none;margin-bottom:8px}
+.bulk-textarea:focus{outline:none;border-color:rgba(251,191,36,.4)}
+/* SLIDER */
+.slider-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.slider-val{font-size:22px;font-weight:900;color:var(--gold)}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.slider-limits{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+/* STAGE */
+.stage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:13px;color:var(--muted)}
+.reset-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:6px 14px;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .2s}
+.reset-btn:hover{color:var(--text)}
+.stage-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 20px;text-align:center;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden}
+.stage-idle{color:var(--muted)}
+.idle-icon{font-size:52px;margin-bottom:14px}
+.avatar{border-radius:20px;overflow:hidden;border:2px solid var(--border);background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
+.avatar.md{width:96px;height:96px}.avatar.lg{width:130px;height:130px;border-width:3px}
+.avatar.glow{border-color:var(--gold);box-shadow:0 0 30px rgba(251,191,36,.4)}
+.avatar.strike img{filter:grayscale(1) opacity(.5)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.spin-name{font-size:clamp(26px,6vw,38px);font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.reveal-label{font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.reveal-label.elim{color:var(--red)}
+.reveal-name{font-size:clamp(26px,7vw,44px);font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 20px rgba(251,191,36,.3))}
+.reveal-name.elim{background:none;-webkit-background-clip:unset;-webkit-text-fill-color:var(--red);text-decoration:line-through}
+/* WINNER LIST */
+.winners-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px}
+.winner-item{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 14px;margin-bottom:8px;animation:slideIn .3s ease}
+.winner-item-right{display:flex;align-items:center;gap:10px}
+.winner-thumb{width:38px;height:38px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.winner-thumb img{width:100%;height:100%;object-fit:cover}
+.winner-name{font-weight:700;font-size:15px}
+.winner-name.elim{color:var(--muted);text-decoration:line-through}
+.winner-phone-link{font-size:12px;color:var(--green);text-decoration:none;display:flex;align-items:center;gap:4px}
+.winner-medal{font-size:22px}
+.winner-num{font-size:11px;color:var(--muted);min-width:24px;text-align:left}
+/* DONE */
+.done-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 24px;text-align:center;margin-bottom:16px}
+/* SUB-TABS */
+.sub-tabs{display:flex;gap:4px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:20px;overflow-x:auto}
+.sub-tab{flex:1;padding:9px 10px;background:none;border:none;border-radius:10px;font-family:inherit;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.sub-tab.active-cyan{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;font-weight:700}
+.sub-tab.active-red{background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;font-weight:700}
+.sub-tab.active-green{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:700}
+.sub-content{display:none}.sub-content.active{display:block}
+/* INFO BOX */
+.info-box{border-radius:12px;padding:12px 16px;font-size:13px;margin-bottom:14px;line-height:1.8;color:var(--muted)}
+.info-box.blue{background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.15)}
+.info-box.purple{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.15)}
+.info-box.gold{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15)}
+.info-box.red{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15)}
+/* WL */
+.wl-row{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.wl-name,.wl-phone{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:13px;text-align:right}
+.wl-name{flex:1}.wl-phone{width:115px;flex:0 0 115px}
+.wl-shares{width:64px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:9px 8px;color:var(--gold);font-family:inherit;font-size:14px;font-weight:700;text-align:center}
+.wl-name:focus,.wl-phone:focus,.wl-shares:focus{outline:none;border-color:rgba(34,211,238,.4)}
+.wl-pct{font-size:11px;color:var(--cyan);min-width:38px;text-align:center}
+.wl-result{background:var(--card);border:1px solid rgba(34,211,238,.3);border-radius:16px;padding:24px;text-align:center;margin-top:16px}
+.wl-winner-name{font-size:30px;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:8px 0}
+.prob-bar{height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;margin:6px 0 3px}
+.prob-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;transition:width .5s ease}
+.prob-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+.prob-label{min-width:80px;color:var(--muted);font-size:12px;text-align:right}
+.prob-bar-wrap{flex:1}
+/* WHEEL */
+.wheel-wrap{text-align:center}
+.wheel-canvas-wrap{position:relative;display:inline-block;margin:12px auto}
+canvas#wheel{display:block;border-radius:50%}
+.wheel-pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:26px;text-shadow:0 2px 8px rgba(0,0,0,.6);z-index:2;line-height:1}
+.wheel-result{background:var(--card);border:1px solid rgba(251,191,36,.3);border-radius:16px;padding:20px;margin-top:14px}
+.wheel-winner{font-size:26px;font-weight:900;color:var(--gold)}
+/* DICE */
+.dice-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:16px 0}
+.dice-config{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.dice-config label{font-size:13px;color:var(--muted)}
+.dice-config select,.dice-config input[type=number]{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px}
+.dice-faces{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.die{width:68px;height:68px;background:var(--card);border:2px solid var(--border);border-radius:14px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.die.rolling{animation:rollDie .1s linear infinite;border-color:var(--gold);box-shadow:0 0 20px rgba(251,191,36,.3)}
+@keyframes rollDie{0%{transform:rotate(-4deg) scale(.95)}50%{transform:rotate(4deg) scale(1.05)}100%{transform:rotate(-4deg) scale(.95)}}
+.die-val{font-size:26px;font-weight:900;color:var(--gold)}
+.dice-sum{font-size:22px;font-weight:700;color:var(--cyan)}
+/* MULTI-STAGE */
+.stages-visual{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.stage-bubble{background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--purple);text-align:center;transition:all .3s}
+.stage-bubble.s-active{background:rgba(168,85,247,.3);box-shadow:0 0 14px rgba(168,85,247,.3)}
+.stage-bubble.s-done{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--green)}
+.stage-arrow{color:var(--muted);font-size:18px}
+/* SLOTS */
+.slots-machine{background:linear-gradient(135deg,#1a0808,#2a1010);border:2px solid #7f1d1d;border-radius:20px;padding:24px;text-align:center;position:relative;overflow:hidden}
+.slots-machine::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top,rgba(239,68,68,.1),transparent 60%);pointer-events:none}
+.slots-reels{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.reel-window{width:78px;height:78px;background:rgba(0,0,0,.5);border:2px solid #7f1d1d;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;position:relative}
+.reel-symbol{display:block;line-height:78px}
+.slots-result{font-size:17px;font-weight:700;margin:6px 0;min-height:26px}
+.slots-result.win{color:var(--gold)}.slots-result.lose{color:var(--red)}
+.slots-btn{padding:12px 28px;background:linear-gradient(135deg,#ef4444,#dc2626);border:none;border-radius:12px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;box-shadow:0 4px 20px rgba(239,68,68,.3);transition:transform .1s}
+.slots-btn:hover{transform:scale(1.03)}.slots-btn:disabled{opacity:.6;cursor:not-allowed}
+/* RISK GAME */
+.risk-status{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:14px;padding:16px;text-align:center;margin-bottom:14px}
+.current-prize{font-size:26px;font-weight:900;color:var(--gold);margin:4px 0}
+.risk-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.take-btn{padding:14px;border-radius:12px;border:1px solid rgba(34,197,94,.4);background:rgba(34,197,94,.12);color:var(--green);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.take-btn:hover{background:rgba(34,197,94,.22)}
+.risk-btn2{padding:14px;border-radius:12px;border:1px solid rgba(239,68,68,.4);background:rgba(239,68,68,.12);color:var(--red);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.risk-btn2:hover{background:rgba(239,68,68,.22)}
+/* GAMBLER FALLACY GAME */
+.coin-display{font-size:60px;text-align:center;margin:10px 0;min-height:80px;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.streak-bar{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.streak-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:1px solid var(--border)}
+.streak-dot.h{background:rgba(251,191,36,.2);color:var(--gold);border-color:rgba(251,191,36,.4)}
+.streak-dot.t{background:rgba(34,211,238,.15);color:var(--cyan);border-color:rgba(34,211,238,.3)}
+.bet-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bet-h{padding:14px;border-radius:12px;border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.1);color:var(--gold);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.bet-h:hover{background:rgba(251,191,36,.2)}
+.bet-t{padding:14px;border-radius:12px;border:1px solid rgba(34,211,238,.4);background:rgba(34,211,238,.1);color:var(--cyan);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.bet-t:hover{background:rgba(34,211,238,.2)}
+/* LOSS AVERSION */
+.la-offer{background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(34,211,238,.1));border:1px solid rgba(168,85,247,.3);border-radius:16px;padding:20px;text-align:center;margin:12px 0}
+.la-sure{font-size:28px;font-weight:900;color:var(--gold)}
+.la-risk-val{font-size:18px;color:var(--purple);font-weight:700}
+/* NEAR MISS */
+.nm-reels{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.nm-reel{width:64px;height:64px;background:rgba(0,0,0,.4);border:2px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px}
+.nm-reel.match{border-color:var(--gold);box-shadow:0 0 12px rgba(251,191,36,.4)}
+.nm-reel.miss{border-color:var(--red)}
+/* EDU */
+.edu-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px}
+.edu-card h3{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.edu-card p,.edu-card li{font-size:13px;color:var(--muted);line-height:2}
+.edu-card ul{padding-right:20px}
+.highlight{color:var(--gold);font-weight:700}
+.edu-table{width:100%;border-collapse:collapse;font-size:12px}
+.edu-table th{background:rgba(255,255,255,.05);padding:8px;text-align:right;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)}
+.edu-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--muted);font-size:12px;line-height:1.6}
+.quiz-option{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:13px;color:var(--text);cursor:pointer;margin-bottom:8px;text-align:right;transition:all .2s}
+.quiz-option:hover:not(:disabled){border-color:rgba(251,191,36,.4)}
+.quiz-option.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--green)}
+.quiz-option.wrong{background:rgba(239,68,68,.08);border-color:var(--red);color:var(--red)}
+.quiz-feedback{padding:11px;border-radius:10px;font-size:13px;margin-top:6px;display:none;line-height:1.7}
+.quiz-feedback.show{display:block}
+.quiz-feedback.correct{background:rgba(34,197,94,.1);color:var(--green)}
+.quiz-feedback.wrong{background:rgba(239,68,68,.07);color:var(--red)}
+/* MISC */
+.hidden{display:none!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+@keyframes bounceIn{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.bounce-in{animation:bounceIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.pulse{animation:pulse 1.5s ease infinite}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- MAIN TABS -->
+<nav class="main-tabs">
+  <button class="main-tab active" onclick="showMainTab('raffle',this)">🎯 قرعه‌کشی</button>
+  <button class="main-tab" onclick="showMainTab('lottery',this)">🎫 بخت‌آزمایی</button>
+  <button class="main-tab" onclick="showMainTab('gamble',this)">🎰 قمار و بازی</button>
+  <button class="main-tab" onclick="showMainTab('edu',this)">📚 آموزش</button>
+</nav>
+
+<!-- ============================================================ -->
+<!-- TAB 1: RAFFLE -->
+<!-- ============================================================ -->
+<div id="tab-raffle" class="tab-content active">
+<div class="wrap">
+  <div class="page-header">
+    <div class="badge">Raffle</div>
+    <h1>🎯 قرعه‌کشی صندوق</h1>
+    <p>انتخاب چند برنده یا حذف تدریجی — با عکس و جشن</p>
+  </div>
+
+  <!-- SETUP -->
+  <div id="raffle-setup">
+    <div class="mode-selector">
+      <button class="mode-btn active" id="mode-pick-btn" onclick="setRaffleMode('pick')">
+        <div class="mode-btn-inner"><span class="mode-icon">🎁</span><span><div class="mode-title">انتخاب برنده</div><div class="mode-hint">چند نفر برنده شوند</div></span></div>
+      </button>
+      <button class="mode-btn" id="mode-elim-btn" onclick="setRaffleMode('eliminate')">
+        <div class="mode-btn-inner"><span class="mode-icon">💥</span><span><div class="mode-title">حذف تا برنده</div><div class="mode-hint">یکی‌یکی حذف، آخری برنده</div></span></div>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label" id="part-count-label">شرکت‌کنندگان (0)</span>
+        <button class="btn-ghost" onclick="toggleBulk()">📋 افزودن دسته‌ای</button>
+      </div>
+      <div class="bulk-area" id="bulk-area">
+        <textarea class="bulk-textarea" id="bulk-text" rows="4" placeholder="علی&#10;سارا&#10;محمد&#10;..."></textarea>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn-ghost" onclick="importBulk()">➕ اضافه کن</button>
+        </div>
+      </div>
+      <div class="participant-list" id="participant-list"></div>
+      <button class="add-row-btn" onclick="addParticipantRow()">+ افزودن نفر</button>
+    </div>
+
+    <div class="card" id="winners-count-card">
+      <div class="slider-row">
+        <span class="card-label">تعداد برندگان</span>
+        <span class="slider-val" id="winners-val">1</span>
+      </div>
+      <input type="range" id="winners-slider" min="1" max="1" value="1" oninput="updateWinnersCount(this.value)">
+      <div class="slider-limits"><span>۱</span><span id="max-winners-label">۱</span></div>
+    </div>
+
+    <div class="card hidden" id="elim-info-card">
+      <p style="text-align:center;color:var(--muted);font-size:13px">🔄 در این حالت یکی‌یکی حذف می‌شوند و آخرین نفر باقی‌مانده برنده است.</p>
+    </div>
+
+    <button class="btn-primary" id="start-raffle-btn" onclick="startRaffle()" disabled>🎯 شروع قرعه‌کشی</button>
+  </div>
+
+  <!-- STAGE -->
+  <div id="raffle-stage" class="hidden">
+    <div class="stage-header">
+      <button class="reset-btn" onclick="resetRaffle()">↻ ریست</button>
+      <span id="remaining-label"></span>
+    </div>
+    <div class="stage-box" id="stage-box">
+      <div class="stage-idle" id="stage-idle">
+        <div class="idle-icon" id="idle-icon">🎁</div>
+        <p id="idle-text">برای انتخاب نفر بعدی دکمه را بزن</p>
+      </div>
+      <div class="hidden" id="stage-participant" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
+        <div id="reveal-label-el" class="reveal-label">Winner</div>
+        <div class="avatar lg" id="stage-avatar">🎟️</div>
+        <div id="stage-name" class="reveal-name"></div>
+        <div id="stage-phone-div" class="hidden">
+          <a id="stage-call-link" href="#" class="btn-green-outline">📞 تماس مستقیم</a>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" id="spin-btn" onclick="handleSpin()">🎲 انتخاب نفر بعدی</button>
+    <div id="picked-list" style="margin-top:16px"></div>
+  </div>
+
+  <!-- DONE -->
+  <div id="raffle-done" class="hidden">
+    <div class="done-card">
+      <div style="font-size:52px;margin-bottom:12px">🏆</div>
+      <div style="font-size:22px;font-weight:900;margin-bottom:6px" id="done-title">قرعه‌کشی پایان یافت</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:20px" id="done-sub"></div>
+      <div id="done-final-winner"></div>
+    </div>
+    <button class="btn-primary" onclick="resetRaffle()">🔄 شروع مجدد</button>
+    <div id="done-list" style="margin-top:16px"></div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 2: LOTTERY -->
+<!-- ============================================================ -->
+<div id="tab-lottery" class="tab-content">
+<div class="wrap">
+  <div class="page-header">
+    <h1 style="background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent">🎫 بخت‌آزمایی پیشرفته</h1>
+    <p>چرخ شانس، سهام وزن‌دار، تاس و قرعه‌کشی چندمرحله‌ای</p>
+  </div>
+
+  <div class="sub-tabs" id="lottery-tabs">
+    <button class="sub-tab active-cyan" onclick="showSub('lottery','weighted',this,'active-cyan')">⚖️ سهام وزن‌دار</button>
+    <button class="sub-tab" onclick="showSub('lottery','wheel',this,'active-cyan')">🎡 چرخ شانس</button>
+    <button class="sub-tab" onclick="showSub('lottery','dice',this,'active-cyan')">🎲 تاس</button>
+    <button class="sub-tab" onclick="showSub('lottery','multi',this,'active-cyan')">🏆 چندمرحله‌ای</button>
+  </div>
+
+  <!-- Weighted -->
+  <div id="lottery-weighted" class="sub-content active">
+    <div class="info-box blue">⚖️ هر نفر می‌تواند تعداد سهم متفاوتی داشته باشد. احتمال = <strong style="color:var(--cyan)">سهم ÷ مجموع سهام</strong></div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label">شرکت‌کنندگان</span>
+        <span class="card-label" style="color:var(--gold)" id="wl-total-shares">مجموع: 0 سهم</span>
+      </div>
+      <div id="wl-list"></div>
+      <button class="add-row-btn" onclick="addWLRow()">+ افزودن نفر</button>
+    </div>
+    <div class="card hidden" id="wl-prob-list">
+      <div class="card-header"><span class="card-label">احتمال برنده شدن هر نفر</span></div>
+      <div id="wl-prob-items"></div>
+    </div>
+    <button class="btn-primary btn-cyan" onclick="runWeightedDraw()" id="wl-draw-btn" disabled>🎯 اجرای قرعه‌کشی</button>
+    <div id="wl-result" class="wl-result hidden"></div>
+  </div>
+
+  <!-- Wheel -->
+  <div id="lottery-wheel" class="sub-content">
+    <div class="card">
+      <div class="card-header"><span class="card-label">اسامی برای چرخ (هر خط یک نفر)</span></div>
+      <textarea id="wheel-names" class="bulk-textarea" rows="6" placeholder="علی&#10;سارا&#10;محمد&#10;زهرا&#10;حسین&#10;رضا" style="margin-bottom:0"></textarea>
+    </div>
+    <div class="wheel-wrap">
+      <button class="btn-primary btn-cyan" onclick="buildWheel()" style="margin-bottom:12px">🔨 ساخت چرخ</button>
+      <div class="wheel-canvas-wrap">
+        <canvas id="wheel" width="300" height="300"></canvas>
+        <div class="wheel-pointer">▼</div>
+      </div>
+      <button class="btn-primary btn-cyan" id="spin-wheel-btn" onclick="spinWheel()" disabled style="margin-top:12px">🌀 چرخاندن!</button>
+      <div id="wheel-result" class="wheel-result hidden" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <!-- Dice -->
+  <div id="lottery-dice" class="sub-content">
+    <div class="dice-wrap">
+      <div class="dice-config">
+        <label>تعداد تاس:</label>
+        <input type="number" id="dice-count" value="2" min="1" max="6" style="width:65px" oninput="renderDice()">
+        <label>اندازه:</label>
+        <select id="dice-size">
+          <option value="6">D6</option><option value="4">D4</option>
+          <option value="8">D8</option><option value="10">D10</option>
+          <option value="12">D12</option><option value="20">D20</option>
+        </select>
+      </div>
+      <div class="dice-faces" id="dice-faces"></div>
+      <div class="dice-sum hidden" id="dice-sum"></div>
+      <button class="btn-primary btn-cyan" onclick="rollDice()" id="roll-btn" style="max-width:200px">🎲 انداختن</button>
+    </div>
+  </div>
+
+  <!-- Multi-stage -->
+  <div id="lottery-multi" class="sub-content">
+    <div class="info-box purple">🏆 قرعه‌کشی سه‌مرحله‌ای: در هر مرحله تعداد کمتری برنده می‌شوند تا یک برنده نهایی انتخاب شود.</div>
+    <div class="card">
+      <div class="card-header"><span class="card-label">اسامی شرکت‌کنندگان</span></div>
+      <textarea id="multi-names" class="bulk-textarea" rows="6" placeholder="علی&#10;سارا&#10;محمد&#10;زهرا&#10;حسین&#10;رضا&#10;مریم&#10;احمد&#10;فاطمه&#10;نوید" style="margin-bottom:0"></textarea>
+    </div>
+    <div id="stages-visual" class="stages-visual hidden"></div>
+    <div id="multi-stage-box"></div>
+    <button class="btn-primary" style="background:linear-gradient(135deg,var(--purple),#7c3aed)" id="multi-start-btn" onclick="startMultiStage()">🚀 شروع قرعه‌کشی</button>
+  </div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 3: GAMBLE & GAMES -->
+<!-- ============================================================ -->
+<div id="tab-gamble" class="tab-content">
+<div class="wrap">
+  <div class="page-header">
+    <h1 style="background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🎰 بازی‌های شانس و مکانیک قمار</h1>
+    <p>تجربه مستقیم مکانیک‌های علمی قمار — بدون پول واقعی</p>
+  </div>
+
+  <div class="sub-tabs">
+    <button class="sub-tab active-red" onclick="showSub('gamble','slots',this,'active-red')">🎰 اسلات</button>
+    <button class="sub-tab" onclick="showSub('gamble','fallacy',this,'active-red')">🪙 مغالطه قمارباز</button>
+    <button class="sub-tab" onclick="showSub('gamble','loss',this,'active-red')">⚖️ زیان‌گریزی</button>
+    <button class="sub-tab" onclick="showSub('gamble','nearmiss',this,'active-red')">🎯 نزدیک بود!</button>
+    <button class="sub-tab" onclick="showSub('gamble','risk',this,'active-red')">💣 ریسک/جایزه</button>
+  </div>
+
+  <!-- SLOTS -->
+  <div id="gamble-slots" class="sub-content active">
+    <div class="info-box red">🎰 <strong style="color:var(--red)">Slot Machine</strong> — احتمال برد واقعی ≈ ۲.۷٪ (۳ سمبل یکسان). در قمارخانه‌های واقعی برای هر ۱۰۰ واحد شرط، به طور متوسط ۸۵-۹۵ واحد برمی‌گردد.</div>
+    <div class="slots-machine">
+      <div style="font-size:20px;font-weight:900;color:var(--gold);margin-bottom:6px;position:relative">🎰 ماشین شانس</div>
+      <div style="color:rgba(255,255,255,.5);font-size:12px;margin-bottom:4px">سکه: <span id="slots-coins" style="color:var(--gold);font-weight:700">100</span> | برد: <span id="slots-won" style="color:var(--green);font-weight:700">0</span> | باخت: <span id="slots-lost" style="color:var(--red);font-weight:700">0</span></div>
+      <div class="slots-reels" id="slots-reels"></div>
+      <div class="slots-result" id="slots-result"></div>
+      <div style="color:rgba(255,255,255,.4);font-size:11px;margin-bottom:6px">احتمال برد: <span id="slots-real-odds" style="color:var(--cyan)">?</span></div>
+      <button class="slots-btn" id="slots-btn" onclick="spinSlots()">🎰 بزن! (−5 سکه)</button>
+      <button onclick="resetSlots()" style="margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:var(--muted);font-family:inherit;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer">↻ ریست</button>
+    </div>
+    <div class="edu-card" style="margin-top:14px">
+      <h3>💡 این بازی چه چیزی نشان می‌دهد؟</h3>
+      <p>اسلات‌ها از «نسبت برد» (RTP) استفاده می‌کنند. RTP=95% یعنی از هر ۱۰۰ تومان، ۹۵ تومان برمی‌گردد — اما توزیع‌شده در هزاران دور. <strong style="color:var(--gold)">هر دور مستقل است</strong> و برد قبلی روی دور بعدی تأثیری ندارد.</p>
+    </div>
+  </div>
+
+  <!-- GAMBLER'S FALLACY -->
+  <div id="gamble-fallacy" class="sub-content">
+    <div class="info-box red">🪙 <strong style="color:var(--red)">مغالطه قمارباز (Gambler's Fallacy)</strong>: باور اشتباه که بعد از چند بار نتیجه یکسان، احتمال نتیجه مخالف بیشتر می‌شود. هر پرتاب کاملاً <strong style="color:var(--gold)">مستقل</strong> است!</div>
+    <div class="card">
+      <div style="text-align:center;margin-bottom:14px">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">سابقه پرتاب‌ها (آخرین ۱۵):</div>
+        <div class="streak-bar" id="streak-bar"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">🔶 = شیر &nbsp; 🔷 = خط</div>
+        <div style="font-size:13px;margin-top:8px">شیر پشت سر هم: <span id="streak-count" style="color:var(--gold);font-weight:700">0</span></div>
+      </div>
+      <div class="coin-display" id="coin-display">🪙</div>
+      <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:12px">احتمال واقعی همیشه: <strong style="color:var(--gold)">۵۰٪</strong></div>
+      <div style="text-align:center;font-size:13px;color:var(--muted);margin-bottom:12px" id="fallacy-msg"></div>
+      <div style="text-align:center;font-size:13px;font-weight:700;margin-bottom:10px">پیش‌بینی بعدی را انتخاب کن:</div>
+      <div class="bet-btns">
+        <button class="bet-h" onclick="flipCoin('H')">🔶 شیر (Heads)</button>
+        <button class="bet-t" onclick="flipCoin('T')">🔷 خط (Tails)</button>
+      </div>
+      <div style="margin-top:12px;display:flex;justify-content:space-between;font-size:13px;color:var(--muted)">
+        <span>امتیاز: <strong style="color:var(--gold)" id="fallacy-score">0</strong></span>
+        <span>پیش‌بینی درست: <strong style="color:var(--green)" id="fallacy-correct">0</strong> / <span id="fallacy-total">0</span></span>
+      </div>
+      <div id="fallacy-lesson" class="info-box red hidden" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- LOSS AVERSION -->
+  <div id="gamble-loss" class="sub-content">
+    <div class="info-box red">⚖️ <strong style="color:var(--red)">زیان‌گریزی (Loss Aversion)</strong>: تحقیقات کانمان و تورسکی نشان می‌دهد ترس از باختن <strong style="color:var(--gold)">۲ برابر قوی‌تر</strong> از لذت برنده شدن است. این بازی این مکانیک را به شما نشان می‌دهد.</div>
+    <div class="card" id="la-game-card">
+      <div style="text-align:center;margin-bottom:14px">
+        <div style="font-size:14px;color:var(--muted)">دور <span id="la-round">1</span> از 10</div>
+        <div style="font-size:20px;font-weight:900;color:var(--text);margin:6px 0" id="la-scenario"></div>
+      </div>
+      <div class="la-offer">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px">گزینه تضمینی:</div>
+        <div class="la-sure" id="la-sure-val"></div>
+      </div>
+      <div style="text-align:center;padding:10px;font-size:13px;color:var(--muted)">یا</div>
+      <div class="la-offer" style="background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(251,191,36,.1));border-color:rgba(239,68,68,.3)">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px">گزینه شانسی (۵۰-۵۰):</div>
+        <div class="la-risk-val" id="la-risk-val"></div>
+      </div>
+      <div class="risk-btns" style="margin-top:14px">
+        <button class="take-btn" onclick="laChoose('safe')">✅ انتخاب تضمینی</button>
+        <button class="risk-btn2" onclick="laChoose('risk')">🎲 شانس بزن</button>
+      </div>
+      <div id="la-result-msg" style="text-align:center;font-size:14px;font-weight:700;min-height:24px;margin-top:10px"></div>
+    </div>
+    <div id="la-stats" class="card hidden">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">📊 تحلیل رفتار شما:</h3>
+      <div id="la-stats-content"></div>
+    </div>
+  </div>
+
+  <!-- NEAR MISS -->
+  <div id="gamble-nearmiss" class="sub-content">
+    <div class="info-box red">🎯 <strong style="color:var(--red)">Near-Miss Effect</strong>: وقتی «نزدیک» به برد می‌شوید، مغز همان پاسخ هیجانی برد را نشان می‌دهد — این طراحی آگاهانه در اسلات‌هاست تا بازی را ادامه دهید.</div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:14px;color:var(--muted);margin-bottom:8px">گردش: <span id="nm-spins" style="color:var(--gold);font-weight:700">0</span> | برد: <span id="nm-wins" style="color:var(--green);font-weight:700">0</span> | نزدیک‌بود: <span id="nm-near" style="color:var(--purple);font-weight:700">0</span></span></div>
+      <div class="nm-reels" id="nm-reels"></div>
+      <div id="nm-msg" style="font-size:16px;font-weight:700;min-height:26px;margin:8px 0"></div>
+      <div id="nm-comment" style="font-size:12px;color:var(--muted);min-height:36px;line-height:1.7;margin-bottom:12px"></div>
+      <button class="btn-primary btn-red" onclick="spinNearMiss()" id="nm-btn">🎰 بزن!</button>
+      <button onclick="resetNearMiss()" style="margin-top:8px;background:none;border:1px solid rgba(255,255,255,.2);color:var(--muted);font-family:inherit;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer">↻ ریست</button>
+    </div>
+    <div class="edu-card" style="margin-top:14px">
+      <h3>💡 چرا «نزدیک بود» خطرناک است؟</h3>
+      <p>در اسلات‌های واقعی، «نزدیک بود» بیشتر از احتمال تصادفی رخ می‌دهد — طراحان عمداً آن را برنامه‌ریزی کرده‌اند. مغز این را به عنوان «مهارت» تفسیر می‌کند نه شانس.</p>
+    </div>
+  </div>
+
+  <!-- RISK/REWARD -->
+  <div id="gamble-risk" class="sub-content">
+    <div class="info-box red">💣 <strong style="color:var(--red)">بازی ریسک/جایزه</strong>: در هر مرحله می‌توانی با جایزه فعلی کنار بروی یا برای جایزه بزرگتر ریسک کنی. احتمال برد با هر مرحله کمتر می‌شود — دقیقاً مثل قمار واقعی.</div>
+    <div id="risk-setup-div">
+      <div class="card">
+        <div class="card-header"><span class="card-label">نام بازیکنان (هر خط یک نفر)</span></div>
+        <textarea id="risk-names" class="bulk-textarea" rows="5" placeholder="علی&#10;سارا&#10;محمد&#10;زهرا&#10;حسین"></textarea>
+      </div>
+      <button class="btn-primary btn-red" onclick="startRiskGame()">💣 شروع بازی</button>
+    </div>
+    <div id="risk-game-div" class="hidden">
+      <div class="risk-status" id="risk-status"></div>
+      <div id="risk-control"></div>
+      <div class="card" id="risk-log" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 4: EDUCATION -->
+<!-- ============================================================ -->
+<div id="tab-edu" class="tab-content">
+<div class="wrap">
+  <div class="page-header">
+    <h1 style="background:linear-gradient(135deg,#22c55e,#16a34a);-webkit-background-clip:text;-webkit-text-fill-color:transparent">📚 آموزش احتمال و قمار</h1>
+    <p>درک علمی مکانیک‌های شانس، ریسک و روانشناسی قمار</p>
+  </div>
+
+  <div class="sub-tabs">
+    <button class="sub-tab active-green" onclick="showSub('edu','prob',this,'active-green')">📊 احتمال</button>
+    <button class="sub-tab" onclick="showSub('edu','mechanics',this,'active-green')">⚙️ مکانیک‌ها</button>
+    <button class="sub-tab" onclick="showSub('edu','psychology',this,'active-green')">🧠 روانشناسی</button>
+    <button class="sub-tab" onclick="showSub('edu','quiz',this,'active-green')">❓ آزمون</button>
+  </div>
+
+  <div id="edu-prob" class="sub-content active">
+    <div class="edu-card">
+      <h3>🎲 احتمال چیست؟</h3>
+      <p>احتمال یعنی اینکه چقدر <span class="highlight">امکان دارد یک رویداد اتفاق بیفتد</span>. از ۰ (ناممکن) تا ۱ (حتمی) یا به صورت درصد بیان می‌شود.</p>
+      <p style="margin-top:8px">مثال: احتمال شیر در انداختن سکه = ۱/۲ = ۵۰٪</p>
+    </div>
+    <div class="edu-card">
+      <h3>📉 کاهش احتمال در مراحل چندگانه</h3>
+      <p>در قرعه‌کشی چندمرحله‌ای، احتمال کلی برابر ضرب احتمال هر مرحله است:</p>
+      <div id="prob-chart-demo" style="margin:12px 0"></div>
+      <p>مثال: ۱۰ برنده از ۱۰۰ نفر، سپس ۳ برنده از ۱۰، سپس ۱ برنده از ۳ = احتمال کل ۱/۳۰۰ ≈ <strong style="color:var(--gold)">۰.۳٪</strong></p>
+    </div>
+    <div class="edu-card">
+      <h3>⚖️ میانگین وزن‌دار — سهام</h3>
+      <p>اگر علی ۵ سهم و سارا ۱ سهم داشته باشد (مجموع ۶):</p>
+      <ul style="margin:8px 0 0 0">
+        <li>احتمال علی = ۵/۶ = ۸۳.۳٪</li>
+        <li>احتمال سارا = ۱/۶ = ۱۶.۷٪</li>
+      </ul>
+      <p style="margin-top:8px">سهام بیشتر = احتمال بیشتر — دقیقاً مثل لاتاری واقعی!</p>
+    </div>
+    <div class="edu-card">
+      <h3>🏠 لبه خانه (House Edge)</h3>
+      <p>قمارخانه‌ها همیشه یک «لبه» آماری دارند. مثال روله اروپایی: ۳۷ خانه (۱-۳۶ و صفر) — اگر روی یک عدد ببرید ۳۵ برابر می‌گیرید اما احتمال برد ۱/۳۷ است.</p>
+      <p style="margin-top:6px">لبه خانه = <span class="highlight">۱/۳۷ × ۳۵ - ۳۶/۳۷ × ۱ ≈ −۲.۷٪</span></p>
+      <p style="margin-top:6px">یعنی برای هر ۱۰۰ تومان شرط، به طور متوسط <span style="color:var(--red);font-weight:700">۲.۷ تومان ضرر</span> می‌کنید.</p>
+    </div>
+  </div>
+
+  <div id="edu-mechanics" class="sub-content">
+    <div class="edu-card">
+      <h3>⚙️ مکانیک‌های طراحی قمار</h3>
+      <table class="edu-table">
+        <tr><th>مکانیک</th><th>توضیح</th><th>هدف</th></tr>
+        <tr><td>ریسک/پاداش</td><td>نگه دار یا ریسک کن</td><td>وسوسه برد بیشتر</td></tr>
+        <tr><td>همه یا هیچ</td><td>باختی؟ هیچ چیز نمی‌گیری</td><td>ترس از دست دادن</td></tr>
+        <tr><td>مراحل چندگانه</td><td>احتمال کمتر در هر مرحله</td><td>تعهد به ادامه</td></tr>
+        <tr><td>فشار زمانی</td><td>چند ثانیه برای تصمیم</td><td>تصمیم احساسی</td></tr>
+        <tr><td>برد کوچک مکرر</td><td>جوایز کم اما مداوم</td><td>عادت‌سازی (conditioning)</td></tr>
+        <tr><td>کنترل توهمی</td><td>انتخاب عدد یا پرتاب تاس</td><td>احساس مهارت کاذب</td></tr>
+        <tr><td>Near-Miss</td><td>نزدیک بود!</td><td>ادامه بازی بعد از باخت</td></tr>
+        <tr><td>پیشرفت تدریجی</td><td>مراحل و سطح‌بندی</td><td>تعهد از دست‌رفته</td></tr>
+      </table>
+    </div>
+    <div class="edu-card">
+      <h3>📊 RTP و House Edge در بازی‌های مختلف</h3>
+      <table class="edu-table">
+        <tr><th>بازی</th><th>RTP</th><th>House Edge</th></tr>
+        <tr><td>بلک‌جک (استراتژی درست)</td><td>~۹۹.۵٪</td><td>~۰.۵٪</td></tr>
+        <tr><td>روله اروپایی</td><td>~۹۷.۳٪</td><td>~۲.۷٪</td></tr>
+        <tr><td>اسلات ماشین</td><td>~۹۲-۹۶٪</td><td>~۴-۸٪</td></tr>
+        <tr><td>لاتاری دولتی</td><td>~۵۰٪</td><td>~۵۰٪</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="edu-psychology" class="sub-content">
+    <div class="edu-card">
+      <h3>🧠 سوگیری‌های شناختی در قمار</h3>
+      <ul>
+        <li><strong style="color:var(--gold)">مغالطه قمارباز:</strong> «۵ بار شیر آمده، پس خط می‌آید» — هر رویداد مستقل است</li>
+        <li><strong style="color:var(--gold)">زیان‌گریزی:</strong> ترس از باختن ۲× قوی‌تر از لذت برنده شدن (کانمان-تورسکی)</li>
+        <li><strong style="color:var(--gold)">اثر نزدیک‌بود:</strong> «نزدیک بود» همان پاسخ عصبی برد را می‌دهد</li>
+        <li><strong style="color:var(--gold)">تداوم تعهد:</strong> «تا اینجا پول خرج کردم، ادامه می‌دهم» (Sunk Cost)</li>
+        <li><strong style="color:var(--gold)">کنترل توهمی:</strong> احساس تأثیرگذاری روی نتیجه تصادفی</li>
+        <li><strong style="color:var(--gold)">تأیید انتخابی:</strong> بردها را به یاد می‌آوریم، باخت‌ها را فراموش</li>
+      </ul>
+    </div>
+    <div class="edu-card">
+      <h3>🔬 علم پشت اعتیاد به قمار</h3>
+      <p>قمار دوپامین آزاد می‌کند — همان ماده عصبی که در اعتیاد به مواد مخدر نقش دارد. برنامه تقویت متغیر (Variable Ratio Reinforcement) که اسلات از آن استفاده می‌کند، قوی‌ترین نوع شرطی‌سازی است — حتی قوی‌تر از پاداش همیشگی.</p>
+      <p style="margin-top:8px">جالب است: کبوترهایی که گاهی (نه همیشه) برای نوک زدن پاداش می‌گرفتند، بیشتر از کبوترهایی که همیشه پاداش می‌گرفتند نوک زدند — این اصل پایه طراحی اسلات است.</p>
+    </div>
+    <div class="edu-card">
+      <h3>🛡️ راهبردهای محافظت</h3>
+      <ul>
+        <li>قبل از بازی، حد ضرر و حد سود تعیین کن</li>
+        <li>«نزدیک بود» = باختی، نه نیمه‌برد</li>
+        <li>هزینه‌های قبلی را در تصمیم لحاظ نکن</li>
+        <li>وقتی هیجانی یا خسته هستی، بازی نکن</li>
+        <li>احتمال واقعی را محاسبه کن، نه احساسی</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="edu-quiz" class="sub-content">
+    <div class="edu-card">
+      <h3>❓ سوال ۱</h3>
+      <p style="margin-bottom:12px">اگر علی ۳ سهم و سارا ۷ سهم داشته باشد، احتمال برنده شدن علی چقدر است؟</p>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q1')">۵۰٪</button>
+      <button class="quiz-option" data-correct="true" onclick="checkQuiz(this,'q1')">۳۰٪</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q1')">۷۰٪</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q1')">۲۵٪</button>
+      <div class="quiz-feedback" id="q1-feedback">✅ درست! ۳/(۳+۷) = ۳/۱۰ = ۳۰٪</div>
+    </div>
+    <div class="edu-card">
+      <h3>❓ سوال ۲</h3>
+      <p style="margin-bottom:12px">«۱۰ بار پشت هم شیر آمده، پس حتماً خط می‌آید» — این چه خطایی است؟</p>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q2')">محاسبه اشتباه</button>
+      <button class="quiz-option" data-correct="true" onclick="checkQuiz(this,'q2')">مغالطه قمارباز</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q2')">زیان‌گریزی</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q2')">کنترل توهمی</button>
+      <div class="quiz-feedback" id="q2-feedback">✅ درست! هر پرتاب سکه مستقل است. احتمال همیشه ۵۰٪ است.</div>
+    </div>
+    <div class="edu-card">
+      <h3>❓ سوال ۳</h3>
+      <p style="margin-bottom:12px">در قرعه‌کشی سه‌مرحله‌ای با احتمال‌های ۱/۱۰، ۱/۳، ۱/۳، احتمال برنده شدن چقدر است؟</p>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q3')">۱۶٪</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q3')">۳.۳٪</button>
+      <button class="quiz-option" data-correct="true" onclick="checkQuiz(this,'q3')">۱.۱٪</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q3')">۱۰٪</button>
+      <div class="quiz-feedback" id="q3-feedback">✅ درست! ۱/۱۰ × ۱/۳ × ۱/۳ = ۱/۹۰ ≈ ۱.۱٪. احتمال‌ها ضرب می‌شوند!</div>
+    </div>
+    <div class="edu-card">
+      <h3>❓ سوال ۴</h3>
+      <p style="margin-bottom:12px">ترس از باختن X تومان چقدر قوی‌تر از لذت برنده شدن X تومان است؟ (طبق تحقیقات کانمان)</p>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q4')">برابر است</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q4')">۱.۵ برابر</button>
+      <button class="quiz-option" data-correct="true" onclick="checkQuiz(this,'q4')">۲ برابر</button>
+      <button class="quiz-option" data-correct="false" onclick="checkQuiz(this,'q4')">۵ برابر</button>
+      <div class="quiz-feedback" id="q4-feedback">✅ درست! کانمان و تورسکی نشان دادند ضرر ۲× قوی‌تر از سود یکسان احساس می‌شود.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ================================================================
+// UTILS
+// ================================================================
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function uid(){return crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)}
+function $(id){return document.getElementById(id)}
+
+// ================================================================
+// MAIN TABS
+// ================================================================
+function showMainTab(name,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(b=>b.classList.remove('active'));
+  $('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Generic sub-tab handler
+function showSub(prefix,name,btn,activeClass){
+  // find all sub-contents and sub-tabs in the same parent section
+  const section=$('tab-'+prefix);
+  section.querySelectorAll('.sub-content').forEach(t=>t.classList.remove('active'));
+  const tabBar=btn.closest('.sub-tabs');
+  tabBar.querySelectorAll('.sub-tab').forEach(b=>{
+    b.classList.remove('active-cyan','active-red','active-green');
+  });
+  $( prefix+'-'+name).classList.add('active');
+  btn.classList.add(activeClass);
+}
+
+// ================================================================
+// CONFETTI
+// ================================================================
+const confCanvas=$('confetti-canvas');
+const confCtx=confCanvas.getContext('2d');
+function resizeConf(){confCanvas.width=window.innerWidth;confCanvas.height=window.innerHeight}
+resizeConf();window.addEventListener('resize',resizeConf);
+let confParts=[],confAId=null;
+function launchConfetti(gold=true){
+  confParts=[];
+  const colors=gold?['#fbbf24','#ec4899','#a855f7','#22d3ee','#f97316']:['#ef4444','#f97316','#a855f7'];
+  for(let i=0;i<130;i++)confParts.push({x:Math.random()*confCanvas.width,y:-10,vx:(Math.random()-.5)*5,vy:Math.random()*3+2,sz:Math.random()*9+4,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*360,rotV:(Math.random()-.5)*12});
+  if(confAId)cancelAnimationFrame(confAId);
+  animConf();
+}
+function animConf(){
+  confCtx.clearRect(0,0,confCanvas.width,confCanvas.height);
+  confParts=confParts.filter(p=>p.y<confCanvas.height+20);
+  confParts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotV;confCtx.save();confCtx.translate(p.x,p.y);confCtx.rotate(p.rot*Math.PI/180);confCtx.fillStyle=p.color;confCtx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz/2);confCtx.restore()});
+  if(confParts.length)confAId=requestAnimationFrame(animConf);
+}
+
+// ================================================================
+// RAFFLE
+// ================================================================
+let raffleMode='pick';
+let participants=[];
+let winnersCount=1;
+let raffleOrder=[];
+let rafflePicked=[];
+let rafflePhase='idle'; // idle | spinning | revealed | done
+let raffleSpinTimer=null;
+const SPIN_DURATION=4200;
+
+function setRaffleMode(mode){
+  raffleMode=mode;
+  $('mode-pick-btn').classList.toggle('active',mode==='pick');
+  $('mode-elim-btn').classList.toggle('active',mode==='eliminate');
+  $('winners-count-card').classList.toggle('hidden',mode==='eliminate');
+  $('elim-info-card').classList.toggle('hidden',mode==='pick');
+  $('start-raffle-btn').textContent=mode==='pick'?'🎯 شروع قرعه‌کشی':'💥 شروع حذف';
+  validateRaffle();
+}
+
+function renderParticipantList(){
+  const list=$('participant-list');
+  list.innerHTML='';
+  participants.forEach(p=>{
+    const row=document.createElement('div');
+    row.className='participant-row';
+    row.innerHTML=`
+      <div class="photo-btn" onclick="document.getElementById('file-${p.id}').click()">
+        ${p.photo?`<img src="${p.photo}"><span class="photo-remove" onclick="event.stopPropagation();removePhoto('${p.id}')">✕</span>`:'📷'}
+      </div>
+      <input type="file" accept="image/*" id="file-${p.id}" class="hidden" onchange="loadPhoto('${p.id}',this)">
+      <input class="name-input" placeholder="نام شرکت‌کننده" value="${escHtml(p.name)}" oninput="updatePart('${p.id}','name',this.value)">
+      <input class="phone-input" type="tel" placeholder="📞 شماره" value="${escHtml(p.phone||'')}" oninput="updatePart('${p.id}','phone',this.value)">
+      <button class="del-btn" onclick="removePart('${p.id}')">✕</button>
+    `;
+    list.appendChild(row);
+  });
+  updatePartCount();validateRaffle();
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function addParticipantRow(name='',phone=''){
+  participants.push({id:uid(),name,phone,photo:null});
+  renderParticipantList();
+  const inputs=document.querySelectorAll('#participant-list .name-input');
+  inputs[inputs.length-1]?.focus();
+}
+
+function updatePart(id,key,val){
+  const p=participants.find(x=>x.id===id);
+  if(p)p[key]=val;
+  updatePartCount();validateRaffle();
+}
+
+function removePart(id){participants=participants.filter(p=>p.id!==id);renderParticipantList()}
+function removePhoto(id){const p=participants.find(x=>x.id===id);if(p){p.photo=null;renderParticipantList()}}
+
+function loadPhoto(id,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{const p=participants.find(x=>x.id===id);if(p){p.photo=e.target.result;renderParticipantList()}};
+  reader.readAsDataURL(file);
+}
+
+function updatePartCount(){
+  const valid=participants.filter(p=>p.name.trim()).length;
+  $('part-count-label').textContent=`شرکت‌کنندگان (${valid})`;
+  const max=Math.max(1,valid-1);
+  const slider=$('winners-slider');
+  slider.max=max;
+  $('max-winners-label').textContent=max;
+  winnersCount=Math.min(winnersCount,max);
+  slider.value=winnersCount;
+  $('winners-val').textContent=winnersCount;
+}
+
+function updateWinnersCount(val){
+  winnersCount=parseInt(val);
+  $('winners-val').textContent=val;
+}
+
+function validateRaffle(){
+  const valid=participants.filter(p=>p.name.trim()).length;
+  const canStart=raffleMode==='pick'?valid>=2&&winnersCount>=1:valid>=2;
+  $('start-raffle-btn').disabled=!canStart;
+}
+
+function toggleBulk(){$('bulk-area').classList.toggle('open')}
+
+function importBulk(){
+  const lines=$('bulk-text').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  lines.forEach(n=>participants.push({id:uid(),name:n,phone:'',photo:null}));
+  $('bulk-text').value='';$('bulk-area').classList.remove('open');
+  renderParticipantList();
+}
+
+function startRaffle(){
+  const valid=participants.filter(p=>p.name.trim());
+  if(valid.length<2)return;
+  raffleOrder=shuffle(valid);rafflePicked=[];rafflePhase='idle';
+  $('raffle-setup').classList.add('hidden');
+  $('raffle-stage').classList.remove('hidden');
+  $('raffle-done').classList.add('hidden');
+  updateStageUI();
+}
+
+function resetRaffle(){
+  rafflePhase='idle';
+  if(raffleSpinTimer)clearTimeout(raffleSpinTimer);
+  $('raffle-setup').classList.remove('hidden');
+  $('raffle-stage').classList.add('hidden');
+  $('raffle-done').classList.add('hidden');
+  $('picked-list').innerHTML='';
+  // Show idle state again
+  $('stage-idle').classList.remove('hidden');
+  $('stage-participant').classList.add('hidden');
+}
+
+function getRafflePool(){return raffleOrder.filter(p=>!rafflePicked.find(d=>d.id===p.id))}
+
+function updateStageUI(){
+  const pool=getRafflePool();
+  const target=raffleMode==='pick'?winnersCount:1;
+  const remaining=raffleMode==='pick'
+    ?`${target-rafflePicked.length} برنده باقی‌مانده`
+    :`${pool.length} نفر باقی‌مانده`;
+  $('remaining-label').textContent=remaining;
+  $('idle-icon').textContent=raffleMode==='pick'?'🎁':'🌀';
+  $('idle-text').textContent=raffleMode==='pick'?'برای انتخاب نفر بعدی دکمه را بزن':'برای حذف نفر بعدی دکمه را بزن';
+  updateSpinBtn();renderPickedList();
+}
+
+function updateSpinBtn(){
+  const pool=getRafflePool();
+  const target=raffleMode==='pick'?winnersCount:1;
+  const isFinal=raffleMode==='pick'?rafflePicked.length+1>=target:pool.length===2;
+  let label;
+  if(rafflePhase==='spinning'){label='⏳ در حال چرخش...'}
+  else if(raffleMode==='pick'){label=isFinal?'🏆 انتخاب آخرین برنده':'🎲 انتخاب نفر بعدی'}
+  else{label=isFinal?'💥 حذف نهایی — برنده مشخص شود':'💥 حذف نفر بعدی'}
+  const btn=$('spin-btn');
+  btn.textContent=label;btn.disabled=rafflePhase==='spinning';
+}
+
+function handleSpin(){
+  const pool=getRafflePool();
+  if(!pool.length||rafflePhase==='spinning')return;
+  const chosen=shuffle(pool)[0];
+  rafflePhase='spinning';
+  updateSpinBtn();
+  $('stage-idle').classList.add('hidden');
+  $('stage-participant').classList.remove('hidden');
+  $('stage-participant').style.display='flex';
+  $('reveal-label-el').textContent='';
+
+  const start=Date.now();
+  let lastId=null;
+
+  const tick=()=>{
+    const elapsed=Date.now()-start;
+    const progress=Math.min(elapsed/SPIN_DURATION,1);
+    // Cycle through pool
+    let candidates=pool.filter(p=>p.id!==lastId);
+    if(!candidates.length)candidates=pool;
+    const disp=candidates[Math.floor(Math.random()*candidates.length)];
+    lastId=disp.id;
+    setStageParticipant(disp,false,false,true);
+
+    if(progress>=1){
+      const isEliminated=raffleMode==='eliminate'&&pool.length>1;
+      setStageParticipant(chosen,true,isEliminated,false);
+      rafflePhase='revealed';
+      rafflePicked.push(chosen);
+      const nowDone=raffleMode==='pick'?rafflePicked.length>=winnersCount:getRafflePool().length<=1;
+      launchConfetti(!isEliminated||nowDone);
+      if(nowDone){setTimeout(()=>showDone(),1400)}
+      else{updateStageUI()}
+      return;
+    }
+    const delay=80+Math.pow(progress,2.6)*360;
+    raffleSpinTimer=setTimeout(tick,delay);
+  };
+  tick();
+}
+
+function setStageParticipant(p,reveal,eliminated,spinning){
+  const avatar=$('stage-avatar');
+  avatar.className='avatar lg'+(reveal&&!eliminated?' glow':'')+(eliminated?' strike':'');
+  avatar.innerHTML=p.photo?`<img src="${p.photo}" alt="${escHtml(p.name)}">`:'🎟️';
+  const nameEl=$('stage-name');
+  nameEl.className=spinning?'spin-name':(eliminated?'reveal-name elim':'reveal-name');
+  nameEl.textContent=p.name;
+  const labelEl=$('reveal-label-el');
+  if(spinning){labelEl.textContent=''}
+  else if(eliminated){labelEl.textContent='Eliminated';labelEl.className='reveal-label elim'}
+  else{labelEl.textContent='Winner ✨';labelEl.className='reveal-label'}
+  const phoneDiv=$('stage-phone-div');
+  if(reveal&&p.phone&&p.phone.trim()){
+    phoneDiv.classList.remove('hidden');
+    const link=$('stage-call-link');
+    link.href='tel:'+p.phone.trim();link.textContent='📞 '+p.phone.trim();
+  }else{phoneDiv.classList.add('hidden')}
+}
+
+function showDone(){
+  $('raffle-stage').classList.add('hidden');
+  $('raffle-done').classList.remove('hidden');
+  if(raffleMode==='eliminate'){
+    const pool=getRafflePool();
+    // The last remaining person (not in picked) is the winner
+    const winner=pool[0];
+    $('done-title').textContent='برنده نهایی';
+    $('done-sub').textContent=`از بین ${raffleOrder.length} نفر`;
+    if(winner){
+      $('done-final-winner').innerHTML=`
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin:16px 0">
+          <div class="avatar lg glow bounce-in">${winner.photo?`<img src="${winner.photo}">`:'🏆'}</div>
+          <div style="font-size:30px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${winner.name}</div>
+          ${winner.phone?`<a href="tel:${winner.phone}" class="btn-green-outline">📞 تماس با برنده</a>`:''}
+        </div>`;
+    }
+  }else{
+    $('done-title').textContent='قرعه‌کشی پایان یافت';
+    $('done-sub').textContent=`${winnersCount} نفر از ${raffleOrder.length} انتخاب شدند`;
+    $('done-final-winner').innerHTML='';
+  }
+  renderDoneList();
+}
+
+function renderPickedList(){
+  const container=$('picked-list');
+  container.innerHTML='';
+  if(!rafflePicked.length)return;
+  const title=document.createElement('div');
+  title.className='winners-title';
+  title.textContent=raffleMode==='pick'?`برندگان (${rafflePicked.length})`:`حذف‌شدگان (${rafflePicked.length})`;
+  container.appendChild(title);
+  const medals=['🥇','🥈','🥉'];
+  rafflePicked.forEach((p,i)=>{
+    const item=document.createElement('div');
+    item.className='winner-item';
+    item.innerHTML=`
+      <span class="winner-medal">${raffleMode==='pick'?(medals[i]||'🎟️'):'💥'}</span>
+      <div class="winner-item-right">
+        <div class="winner-thumb">${p.photo?`<img src="${p.photo}">`:(raffleMode==='pick'?'🎟️':'✖️')}</div>
+        <div>
+          <div class="winner-name${raffleMode==='eliminate'?' elim':''}">${p.name}</div>
+          ${p.phone?`<a href="tel:${p.phone}" class="winner-phone-link">📞 ${p.phone}</a>`:''}
+        </div>
+      </div>
+      <span class="winner-num">#${i+1}</span>`;
+    container.appendChild(item);
+  });
+}
+
+function renderDoneList(){
+  const container=$('done-list');container.innerHTML='';
+  if(!rafflePicked.length)return;
+  const medals=['🥇','🥈','🥉'];
+  rafflePicked.forEach((p,i)=>{
+    const item=document.createElement('div');
+    item.className='winner-item';
+    item.innerHTML=`
+      <span class="winner-medal">${raffleMode==='pick'?(medals[i]||'🎟️'):'💥'}</span>
+      <div class="winner-item-right">
+        <div class="winner-thumb">${p.photo?`<img src="${p.photo}">`:'🎟️'}</div>
+        <div>
+          <div class="winner-name">${p.name}</div>
+          ${p.phone?`<a href="tel:${p.phone}" class="winner-phone-link">📞 ${p.phone}</a>`:''}
+        </div>
+      </div>`;
+    container.appendChild(item);
+  });
+}
+
+// init 3 rows
+addParticipantRow();addParticipantRow();addParticipantRow();
+
+// ================================================================
+// WEIGHTED LOTTERY
+// ================================================================
+let wlList=[];
+
+function initWL(){for(let i=0;i<3;i++)addWLRow()}
+
+function addWLRow(name='',phone='',shares=1){
+  const id=uid();
+  wlList.push({id,name,phone,shares});
+  renderWLList();
+}
+
+function renderWLList(){
+  const container=$('wl-list');
+  container.innerHTML='';
+  const total=wlList.reduce((s,p)=>s+(parseInt(p.shares)||0),0);
+  $('wl-total-shares').textContent=`مجموع: ${total} سهم`;
+
+  wlList.forEach(p=>{
+    const pct=total?((parseInt(p.shares)||0)/total*100).toFixed(1):0;
+    const row=document.createElement('div');
+    row.className='wl-row';
+    row.innerHTML=`
+      <input class="wl-name" placeholder="نام" value="${escHtml(p.name)}" oninput="updateWLField('${p.id}','name',this.value)">
+      <input class="wl-phone" type="tel" placeholder="📞 شماره" value="${escHtml(p.phone||'')}" oninput="updateWLField('${p.id}','phone',this.value)">
+      <input class="wl-shares" type="number" min="1" max="999" value="${p.shares}" oninput="updateWLField('${p.id}','shares',this.value)">
+      <span class="wl-pct">${pct}٪</span>
+      <button class="del-btn" onclick="removeWLRow('${p.id}')">✕</button>`;
+    container.appendChild(row);
+  });
+
+  const probItems=$('wl-prob-items');
+  const probCard=$('wl-prob-list');
+  const valid=wlList.filter(p=>p.name.trim()&&(parseInt(p.shares)||0)>0);
+  if(valid.length>=2){
+    probCard.classList.remove('hidden');
+    probItems.innerHTML='';
+    valid.forEach(p=>{
+      const pct=total?((parseInt(p.shares)||0)/total*100):0;
+      probItems.innerHTML+=`
+        <div class="prob-row" style="margin-bottom:8px">
+          <span class="prob-label">${p.name}</span>
+          <div class="prob-bar-wrap">
+            <div class="prob-bar"><div class="prob-fill" style="width:${pct}%"></div></div>
+            <div style="font-size:11px;color:var(--cyan);text-align:left">${pct.toFixed(1)}٪ (${p.shares} سهم)</div>
+          </div>
+        </div>`;
+    });
+  }else{probCard.classList.add('hidden')}
+  $('wl-draw-btn').disabled=valid.length<2;
+}
+
+function updateWLField(id,key,val){
+  const p=wlList.find(x=>x.id===id);
+  if(!p)return;
+  if(key==='shares'){const n=parseInt(val)||1;p.shares=Math.max(1,n);}
+  else{p[key]=val;}
+  // re-render only pct spans and prob bars, not the whole list (to avoid cursor jump)
+  const total=wlList.reduce((s,x)=>s+(parseInt(x.shares)||0),0);
+  $('wl-total-shares').textContent=`مجموع: ${total} سهم`;
+  // Update pct displays
+  document.querySelectorAll('.wl-pct').forEach((el,i)=>{
+    if(wlList[i]){const pct=total?((parseInt(wlList[i].shares)||0)/total*100).toFixed(1):0;el.textContent=pct+'٪';}
+  });
+  // Update prob bars
+  const valid=wlList.filter(p=>p.name.trim()&&(parseInt(p.shares)||0)>0);
+  const probItems=$('wl-prob-items');
+  const probCard=$('wl-prob-list');
+  if(valid.length>=2){
+    probCard.classList.remove('hidden');
+    probItems.innerHTML='';
+    valid.forEach(p=>{
+      const pct=total?((parseInt(p.shares)||0)/total*100):0;
+      probItems.innerHTML+=`
+        <div class="prob-row" style="margin-bottom:8px">
+          <span class="prob-label">${p.name}</span>
+          <div class="prob-bar-wrap">
+            <div class="prob-bar"><div class="prob-fill" style="width:${pct}%"></div></div>
+            <div style="font-size:11px;color:var(--cyan);text-align:left">${pct.toFixed(1)}٪ (${p.shares} سهم)</div>
+          </div>
+        </div>`;
+    });
+  }else{probCard.classList.add('hidden')}
+  $('wl-draw-btn').disabled=valid.length<2;
+}
+
+function removeWLRow(id){wlList=wlList.filter(p=>p.id!==id);renderWLList()}
+
+function runWeightedDraw(){
+  const valid=wlList.filter(p=>p.name.trim()&&(parseInt(p.shares)||0)>0);
+  if(valid.length<2)return;
+  const total=valid.reduce((s,p)=>s+parseInt(p.shares),0);
+  let r=Math.random()*total;
+  let winner=valid[valid.length-1]; // default last
+  let cum=0;
+  for(const p of valid){cum+=parseInt(p.shares);if(r<cum){winner=p;break;}}
+  const pct=(parseInt(winner.shares)/total*100).toFixed(1);
+  const el=$('wl-result');
+  el.classList.remove('hidden');
+  el.innerHTML=`
+    <div style="font-size:11px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">🏆 برنده</div>
+    <div class="wl-winner-name bounce-in">${winner.name}</div>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:10px">${winner.shares} سهم از ${total} — احتمال: ${pct}٪</div>
+    ${winner.phone?`<a href="tel:${winner.phone}" class="btn-green-outline">📞 ${winner.phone}</a>`:''}`;
+  launchConfetti(true);
+}
+
+initWL();
+
+// ================================================================
+// SPINNING WHEEL  — BUG FIX: pointer at TOP = angle offset -π/2
+// ================================================================
+let wheelNames=[];
+let wheelSpinning=false;
+let wheelAngle=0; // cumulative rotation added to canvas
+let wheelVelocity=0;
+let wheelAnimId2=null;
+
+function buildWheel(){
+  const text=$('wheel-names').value;
+  wheelNames=text.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(wheelNames.length<2){alert('حداقل ۲ اسم وارد کن');return;}
+  wheelAngle=0;
+  drawWheel(wheelAngle);
+  $('spin-wheel-btn').disabled=false;
+  $('wheel-result').classList.add('hidden');
+}
+
+function drawWheel(angle){
+  const canvas=$('wheel');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const cx=150,cy=150,r=140;
+  const n=wheelNames.length;
+  const arc=(2*Math.PI)/n;
+  const colors=['#fbbf24','#ec4899','#a855f7','#22d3ee','#ef4444','#22c55e','#f97316','#06b6d4','#8b5cf6','#f43f5e'];
+  ctx.clearRect(0,0,300,300);
+  for(let i=0;i<n;i++){
+    const startA=angle+i*arc;
+    const endA=startA+arc;
+    ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,startA,endA);
+    ctx.fillStyle=colors[i%colors.length];ctx.fill();
+    ctx.strokeStyle='#0a0a0f';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(startA+arc/2);
+    ctx.textAlign='right';ctx.fillStyle='#fff';
+    ctx.font=`bold ${Math.min(14,100/n+6)}px Vazirmatn,sans-serif`;
+    ctx.shadowBlur=4;ctx.shadowColor='rgba(0,0,0,0.6)';
+    const label=wheelNames[i].length>9?wheelNames[i].slice(0,9)+'…':wheelNames[i];
+    ctx.fillText(label,r-8,5);ctx.restore();
+  }
+  ctx.beginPath();ctx.arc(cx,cy,14,0,2*Math.PI);
+  ctx.fillStyle='#1a1a26';ctx.fill();ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;ctx.stroke();
+}
+
+function spinWheel(){
+  if(wheelSpinning||!wheelNames.length)return;
+  wheelSpinning=true;
+  wheelVelocity=Math.random()*0.18+0.22;
+  $('wheel-result').classList.add('hidden');
+  animWheel();
+}
+
+function animWheel(){
+  wheelAngle+=wheelVelocity;
+  wheelVelocity*=0.987;
+  drawWheel(wheelAngle);
+  if(wheelVelocity>0.002){wheelAnimId2=requestAnimationFrame(animWheel)}
+  else{
+    wheelSpinning=false;
+    // FIX: pointer at TOP. Segments start at angle=0 on the RIGHT side of canvas.
+    // wheelAngle is added to each segment's start. The pointer is at -π/2 from canvas center (top).
+    // We need to find which segment is at the top pointer position.
+    const n=wheelNames.length;
+    const arc=(2*Math.PI)/n;
+    // Top of canvas = -π/2 in canvas coords
+    // A segment i spans [wheelAngle + i*arc, wheelAngle + (i+1)*arc]
+    // We want segment where (-π/2) mod 2π falls within its range
+    // Equivalent: find i where (pointerAngle - wheelAngle) mod 2π is in [i*arc, (i+1)*arc)
+    const pointerAngle=-Math.PI/2;
+    let relAngle=((pointerAngle-wheelAngle)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+    const idx=Math.floor(relAngle/arc)%n;
+    const winner=wheelNames[idx];
+    const el=$('wheel-result');
+    el.classList.remove('hidden');
+    el.innerHTML=`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">🎡 برنده چرخ شانس</div><div class="wheel-winner bounce-in">${winner}</div>`;
+    launchConfetti(true);
+  }
+}
+
+// ================================================================
+// DICE
+// ================================================================
+const D6SYMBOLS=['⚀','⚁','⚂','⚃','⚄','⚅'];
+
+function renderDice(){
+  const count=parseInt($('dice-count').value)||2;
+  const faces=$('dice-faces');
+  if(!faces)return;
+  faces.innerHTML='';
+  for(let i=0;i<count;i++){
+    const die=document.createElement('div');
+    die.className='die';die.id='die-'+i;
+    die.innerHTML='<span class="die-val">?</span>';
+    faces.appendChild(die);
+  }
+  $('dice-sum').classList.add('hidden');
+}
+
+renderDice();
+
+function rollDice(){
+  const count=parseInt($('dice-count').value)||2;
+  const size=parseInt($('dice-size').value)||6;
+  const btn=$('roll-btn');
+  btn.disabled=true;
+  let ticks=0;const maxTicks=22;
+  const iv=setInterval(()=>{
+    for(let i=0;i<count;i++){
+      const die=$('die-'+i);if(!die)continue;
+      die.classList.add('rolling');
+      const r=Math.floor(Math.random()*size)+1;
+      die.querySelector('.die-val').textContent=size===6?D6SYMBOLS[r-1]:r;
+    }
+    ticks++;
+    if(ticks>=maxTicks){
+      clearInterval(iv);
+      let sum=0;
+      for(let i=0;i<count;i++){
+        const r=Math.floor(Math.random()*size)+1;sum+=r;
+        const die=$('die-'+i);if(!die)continue;
+        die.classList.remove('rolling');
+        die.querySelector('.die-val').textContent=size===6?D6SYMBOLS[r-1]:r;
+      }
+      const sumEl=$('dice-sum');
+      if(count>1){sumEl.textContent=`مجموع: ${sum}`;sumEl.classList.remove('hidden')}
+      btn.disabled=false;
+    }
+  },80);
+}
+
+// ================================================================
+// MULTI-STAGE LOTTERY
+// ================================================================
+let multiState=null;
+
+function startMultiStage(){
+  const names=$('multi-names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(names.length<4){alert('حداقل ۴ نفر وارد کن');return;}
+  // Build stages: repeatedly take ~1/3
+  const stagesData=[];
+  let cur=shuffle([...names]);
+  while(cur.length>1){
+    const nextCount=Math.max(1,Math.round(cur.length/3));
+    stagesData.push({pool:[...cur],nextCount,winners:[]});
+    if(nextCount===1)break;
+    cur=cur.slice(0,nextCount); // placeholder, will be filled after draw
+  }
+  multiState={stages:stagesData,currentStage:0};
+  $('multi-start-btn').classList.add('hidden');
+  renderMultiStage();
+}
+
+function renderMultiStage(){
+  const {stages,currentStage}=multiState;
+  const visual=$('stages-visual');
+  visual.classList.remove('hidden');
+  visual.innerHTML=stages.map((s,i)=>{
+    let cls='stage-bubble';
+    if(i<currentStage)cls+=' s-done';
+    else if(i===currentStage)cls+=' s-active';
+    return `<span class="${cls}">مرحله ${i+1}<br><small style="font-size:10px">${s.nextCount} برنده</small></span>`+(i<stages.length-1?'<span class="stage-arrow">→</span>':'');
+  }).join('');
+
+  const box=$('multi-stage-box');
+  if(currentStage>=stages.length){
+    const lastStage=stages[stages.length-1];
+    const finalWinner=lastStage.winners[0]||'?';
+    box.innerHTML=`
+      <div class="card" style="text-align:center;padding:32px">
+        <div style="font-size:48px;margin-bottom:12px">🏆</div>
+        <div style="font-size:22px;font-weight:900;color:var(--gold);margin-bottom:8px">${finalWinner}</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:16px">برنده نهایی از ${stages[0].pool.length} نفر</div>
+        <button class="btn-primary btn-cyan" onclick="resetMultiStage()">🔄 شروع مجدد</button>
+      </div>`;
+    launchConfetti(true);return;
+  }
+
+  const stage=stages[currentStage];
+  const pct=(stage.nextCount/stage.pool.length*100).toFixed(0);
+  box.innerHTML=`
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label">مرحله ${currentStage+1} — انتخاب ${stage.nextCount} نفر از ${stage.pool.length}</span>
+        <span style="color:var(--purple);font-size:12px">احتمال: ${pct}٪</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+        ${stage.pool.map(n=>`<span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:4px 10px;font-size:13px;color:var(--purple)">${n}</span>`).join('')}
+      </div>
+      <button class="btn-primary" style="background:linear-gradient(135deg,var(--purple),#7c3aed)" onclick="runMultiStage()">🎲 اجرای مرحله ${currentStage+1}</button>
+    </div>`;
+}
+
+function runMultiStage(){
+  const stage=multiState.stages[multiState.currentStage];
+  const winners=shuffle(stage.pool).slice(0,stage.nextCount);
+  stage.winners=winners;
+  multiState.currentStage++;
+  if(multiState.currentStage<multiState.stages.length){
+    multiState.stages[multiState.currentStage].pool=shuffle(winners);
+    // recalculate nextCount for next stage
+    const next=multiState.stages[multiState.currentStage];
+    next.nextCount=Math.max(1,Math.round(next.pool.length/3));
+  }
+  launchConfetti(multiState.currentStage>=multiState.stages.length);
+  renderMultiStage();
+}
+
+function resetMultiStage(){
+  multiState=null;
+  $('multi-start-btn').classList.remove('hidden');
+  $('stages-visual').classList.add('hidden');
+  $('multi-stage-box').innerHTML='';
+}
+
+// ================================================================
+// SLOTS (with proper stats tracking)
+// ================================================================
+const SLOT_SYMBOLS_ARR=['🍒','🍋','🔔','⭐','💎','7️⃣','🍊','🍇'];
+let slotsCoins=100,slotsWon=0,slotsLost=0,slotsTotalSpins=0,slotsWins=0;
+let slotsSpinning=false;
+
+function initSlots(){
+  const reels=$('slots-reels');if(!reels)return;
+  reels.innerHTML='';
+  for(let i=0;i<3;i++){
+    const w=document.createElement('div');w.className='reel-window';w.id='sreel-'+i;
+    w.innerHTML=`<span class="reel-symbol">${SLOT_SYMBOLS_ARR[Math.floor(Math.random()*SLOT_SYMBOLS_ARR.length)]}</span>`;
+    reels.appendChild(w);
+  }
+}
+
+function resetSlots(){slotsCoins=100;slotsWon=0;slotsLost=0;slotsTotalSpins=0;slotsWins=0;updateSlotsStats();initSlots();$('slots-result').textContent='';$('slots-real-odds').textContent='?'}
+
+function updateSlotsStats(){
+  $('slots-coins').textContent=slotsCoins;
+  $('slots-won').textContent=slotsWon;
+  $('slots-lost').textContent=slotsLost;
+  if(slotsTotalSpins>0)$('slots-real-odds').textContent=(slotsWins/slotsTotalSpins*100).toFixed(1)+'٪';
+}
+
+function spinSlots(){
+  if(slotsSpinning||slotsCoins<5)return;
+  slotsSpinning=true;slotsCoins-=5;slotsLost+=5;slotsTotalSpins++;
+  $('slots-btn').disabled=true;$('slots-result').textContent='🎰 ...';$('slots-result').className='slots-result';
+  updateSlotsStats();
+
+  const results=[];
+  for(let i=0;i<3;i++){
+    $('sreel-'+i).classList.add('reel-window');
+    results.push(SLOT_SYMBOLS_ARR[Math.floor(Math.random()*SLOT_SYMBOLS_ARR.length)]);
+  }
+  // Animate ticking
+  let tick=0;
+  const iv=setInterval(()=>{
+    for(let i=0;i<3;i++){
+      const reel=$('sreel-'+i);if(!reel)continue;
+      reel.querySelector('.reel-symbol').textContent=SLOT_SYMBOLS_ARR[Math.floor(Math.random()*SLOT_SYMBOLS_ARR.length)];
+    }
+    tick++;
+    if(tick>15){
+      clearInterval(iv);
+      for(let i=0;i<3;i++){const reel=$('sreel-'+i);if(reel)reel.querySelector('.reel-symbol').textContent=results[i]}
+      const isWin=results[0]===results[1]&&results[1]===results[2];
+      const isTwoMatch=results[0]===results[1]||results[1]===results[2]||results[0]===results[2];
+      const resEl=$('slots-result');
+      if(isWin){const gain=50;slotsCoins+=gain;slotsWon+=gain;slotsWins++;resEl.textContent='🎉 جک‌پات! +50 سکه';resEl.className='slots-result win';launchConfetti(true)}
+      else if(isTwoMatch){const gain=8;slotsCoins+=gain;slotsWon+=gain;resEl.textContent='✨ دو تا یکی! +8 سکه';resEl.className='slots-result win'}
+      else{resEl.textContent='❌ باختی! −5 سکه';resEl.className='slots-result lose'}
+      updateSlotsStats();
+      slotsSpinning=false;$('slots-btn').disabled=slotsCoins<5;
+    }
+  },80);
+}
+
+initSlots();
+
+// ================================================================
+// GAMBLER'S FALLACY GAME
+// ================================================================
+let gfHistory=[],gfScore=0,gfCorrect=0,gfTotal=0;
+
+function flipCoin(bet){
+  const result=Math.random()<0.5?'H':'T';
+  gfHistory.push(result);if(gfHistory.length>15)gfHistory.shift();
+  gfTotal++;
+  const won=bet===result;
+  if(won)gfScore+=10;else gfScore-=5;
+  if(won)gfCorrect++;
+
+  // Update coin display
+  const coin=$('coin-display');
+  coin.textContent=result==='H'?'🟡':'🔵';
+  coin.style.fontSize='64px';
+
+  // Update streak bar
+  const bar=$('streak-bar');
+  bar.innerHTML=gfHistory.map(r=>`<div class="streak-dot ${r==='H'?'h':'t'}">${r==='H'?'🔶':'🔷'}</div>`).join('');
+
+  // Count current streak of H
+  let streak=0;
+  for(let i=gfHistory.length-1;i>=0;i--){if(gfHistory[i]==='H')streak++;else break;}
+  $('streak-count').textContent=streak;
+
+  // Fallacy message
+  let msg='';
+  const lastResult=gfHistory[gfHistory.length-1];
+  if(streak>=3){
+    msg=`🔶 ${streak} بار پشت سر هم شیر! احتمال خط بعدی هنوز ۵۰٪ است — اما مغزت می‌گوید خط می‌آید!`;
+    $('fallacy-lesson').classList.remove('hidden');
+    $('fallacy-lesson').textContent=`💡 مغالطه قمارباز: بعد از ${streak} بار شیر، احتمال خط بعدی همچنان دقیقاً ۵۰٪ است. سکه حافظه ندارد!`;
+  }else if(!won){
+    msg=`❌ اشتباه! ${lastResult==='H'?'🔶 شیر':'🔷 خط'} آمد.`;
+  }else{
+    msg=`✅ درست! ${lastResult==='H'?'🔶 شیر':'🔷 خط'} آمد.`;
+  }
+  $('fallacy-msg').textContent=msg;
+  $('fallacy-score').textContent=gfScore;
+  $('fallacy-correct').textContent=gfCorrect;
+  $('fallacy-total').textContent=gfTotal;
+}
+
+// ================================================================
+// LOSS AVERSION GAME
+// ================================================================
+const LA_SCENARIOS=[
+  {type:'gain',sure:50,riskWin:120,riskLose:0,desc:'یک جایزه دریافت می‌کنی:'},
+  {type:'loss',sure:-30,riskWin:0,riskLose:-80,desc:'یک ضرر در پیش داری:'},
+  {type:'gain',sure:20,riskWin:60,riskLose:0,desc:'فرصت کسب پاداش:'},
+  {type:'loss',sure:-20,riskWin:0,riskLose:-50,desc:'ریسک ضرر:'},
+  {type:'gain',sure:100,riskWin:220,riskLose:0,desc:'جایزه بزرگ در دسترس:'},
+  {type:'loss',sure:-50,riskWin:0,riskLose:-120,desc:'احتمال ضرر بزرگ:'},
+  {type:'gain',sure:30,riskWin:80,riskLose:0,desc:'پاداش پیش روست:'},
+  {type:'loss',sure:-40,riskWin:0,riskLose:-100,desc:'چالش مالی:'},
+  {type:'gain',sure:70,riskWin:150,riskLose:0,desc:'فرصت سرمایه‌گذاری:'},
+  {type:'loss',sure:-60,riskWin:0,riskLose:-130,desc:'ضرر محتمل:'},
+];
+let laRound=0,laSafeChoices=0,laRiskChoices=0,laGainSafe=0,laLossSafe=0;
+
+function initLA(){
+  laRound=0;laSafeChoices=0;laRiskChoices=0;laGainSafe=0;laLossSafe=0;
+  $('la-game-card').classList.remove('hidden');
+  $('la-stats').classList.add('hidden');
+  renderLAScenario();
+}
+
+function renderLAScenario(){
+  if(laRound>=LA_SCENARIOS.length){showLAStats();return}
+  const s=LA_SCENARIOS[laRound];
+  $('la-round').textContent=laRound+1;
+  $('la-scenario').textContent=s.desc;
+  const isGain=s.type==='gain';
+  $('la-sure-val').textContent=(isGain?'+':'')+s.sure+' امتیاز (تضمینی)';
+  $('la-risk-val').innerHTML=isGain
+    ?`+${s.riskWin} امتیاز یا +0 (شانس ۵۰-۵۰)`
+    :`${s.riskLose} امتیاز یا +0 (شانس ۵۰-۵۰)`;
+  $('la-result-msg').textContent='';
+}
+
+function laChoose(choice){
+  const s=LA_SCENARIOS[laRound];
+  if(choice==='safe'){laSafeChoices++;if(s.type==='gain')laGainSafe++;else laLossSafe++}
+  else{laRiskChoices++;}
+  let msg='';
+  if(choice==='risk'){
+    const won=Math.random()<0.5;
+    const val=s.type==='gain'?(won?s.riskWin:0):(won?0:s.riskLose);
+    msg=(val>0?'✅ برد! +':'')+(val===0?'±0':(val>0?'+':'')+val)+' امتیاز';
+  }else{msg=`✅ انتخاب مطمئن: ${s.sure>0?'+':''}${s.sure} امتیاز`}
+  $('la-result-msg').textContent=msg;
+  laRound++;
+  setTimeout(renderLAScenario,900);
+}
+
+function showLAStats(){
+  $('la-game-card').classList.add('hidden');
+  const la=$('la-stats');la.classList.remove('hidden');
+  const gainRisk=10-laGainSafe;const lossRisk=10-laLossSafe;
+  // Loss aversion coefficient approximation
+  const laCoef=lossRisk>0?(laLossSafe/lossRisk).toFixed(1):'∞';
+  la.querySelector('#la-stats-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:13px">
+      <div>گزینه مطمئن: <strong style="color:var(--gold)">${laSafeChoices}</strong></div>
+      <div>گزینه شانسی: <strong style="color:var(--purple)">${laRiskChoices}</strong></div>
+    </div>
+    <div style="margin-bottom:12px;font-size:13px;color:var(--muted)">
+      <div>در سناریوهای <strong style="color:var(--green)">سود</strong>: ${laGainSafe} بار مطمئن انتخاب کردید</div>
+      <div style="margin-top:4px">در سناریوهای <strong style="color:var(--red)">ضرر</strong>: ${laLossSafe} بار مطمئن انتخاب کردید</div>
+    </div>
+    <div class="info-box gold">
+      💡 <strong>تحلیل:</strong> ${laLossSafe>laGainSafe
+        ?'شما در برابر ضرر محتاط‌تر بودید — این زیان‌گریزی کلاسیک است! مغز ضرر را شدیدتر احساس می‌کند.'
+        :'رفتار شما نسبتاً متعادل بود — ریسک‌پذیری خوبی نشان دادید.'} طبق تحقیقات کانمان، اکثر مردم در سناریوهای ضرر <strong>محافظه‌کارتر</strong> هستند.
+    </div>
+    <button class="btn-primary" style="margin-top:12px;background:linear-gradient(135deg,var(--purple),#7c3aed)" onclick="initLA()">🔄 دوباره بازی کن</button>
+  `;
+}
+
+initLA();
+
+// ================================================================
+// NEAR-MISS GAME
+// ================================================================
+const NM_SYMBOLS=['🍒','🍒','🍒','🍋','🔔','⭐','💎','7️⃣']; // 🍒 appears 3x for higher near-miss freq
+let nmSpins=0,nmWins=0,nmNear=0,nmSpinning=false;
+
+function initNearMiss(){
+  const reels=$('nm-reels');if(!reels)return;
+  reels.innerHTML='';
+  for(let i=0;i<3;i++){
+    const r=document.createElement('div');r.className='nm-reel';r.id='nmr-'+i;r.textContent='?';
+    reels.appendChild(r);
+  }
+}
+
+function spinNearMiss(){
+  if(nmSpinning)return;
+  nmSpinning=true;$('nm-btn').disabled=true;nmSpins++;
+  $('nm-spins').textContent=nmSpins;$('nm-msg').textContent='';$('nm-comment').textContent='';
+
+  // Weighted near-miss: 40% chance of near-miss (2 matching), 3% jackpot, rest random
+  const rand=Math.random();
+  let results;
+  if(rand<0.03){// Jackpot
+    const s=NM_SYMBOLS[Math.floor(Math.random()*4)]; results=[s,s,s];
+  }else if(rand<0.43){// Near-miss: 2 matching
+    const s='🍒';
+    if(Math.random()<0.5)results=[s,s,NM_SYMBOLS[3+Math.floor(Math.random()*5)]];
+    else results=[s,NM_SYMBOLS[3+Math.floor(Math.random()*5)],s];
+  }else{// Random (no match)
+    do{results=[NM_SYMBOLS[Math.floor(Math.random()*NM_SYMBOLS.length)],NM_SYMBOLS[Math.floor(Math.random()*NM_SYMBOLS.length)],NM_SYMBOLS[Math.floor(Math.random()*NM_SYMBOLS.length)]];}
+    while(results[0]===results[1]||results[1]===results[2]||results[0]===results[2]);
+  }
+
+  // Animate
+  let tick=0;
+  const iv=setInterval(()=>{
+    for(let i=0;i<3;i++){const r=$('nmr-'+i);if(r)r.textContent=NM_SYMBOLS[Math.floor(Math.random()*NM_SYMBOLS.length)]}
+    tick++;
+    if(tick>14){
+      clearInterval(iv);
+      for(let i=0;i<3;i++){const r=$('nmr-'+i);if(!r)continue;r.textContent=results[i];r.className='nm-reel';}
+      const isWin=results[0]===results[1]&&results[1]===results[2];
+      const isNear=(results[0]===results[1])||(results[1]===results[2])||(results[0]===results[2]);
+      const msgEl=$('nm-msg');const commentEl=$('nm-comment');
+      if(isWin){
+        nmWins++;$('nm-wins').textContent=nmWins;
+        msgEl.textContent='🎉 جک‌پات!';msgEl.style.color='var(--gold)';
+        for(let i=0;i<3;i++)$('nmr-'+i).classList.add('match');
+        commentEl.textContent='✅ برنده شدی! (این نادر است — احتمال ≈ ۳٪)';
+        launchConfetti(true);
+      }else if(isNear){
+        nmNear++;$('nm-near').textContent=nmNear;
+        msgEl.textContent='😲 نزدیک بود!';msgEl.style.color='var(--purple)';
+        for(let i=0;i<3;i++){const r=$('nmr-'+i);r.classList.add(results.filter(x=>x===results[i]).length>1?'match':'miss')}
+        commentEl.textContent='⚠️ مغز تو همان هیجان برد را احساس می‌کند — اما تو باختی. طراحان این را عمداً بیشتر از تصادف ایجاد می‌کنند!';
+      }else{
+        msgEl.textContent='❌ باختی';msgEl.style.color='var(--red)';
+        for(let i=0;i<3;i++)$('nmr-'+i).classList.add('miss');
+        commentEl.textContent='این دور هیچ تطابقی نبود.';
+      }
+      nmSpinning=false;$('nm-btn').disabled=false;
+    }
+  },80);
+}
+
+function resetNearMiss(){nmSpins=0;nmWins=0;nmNear=0;initNearMiss();$('nm-spins').textContent='0';$('nm-wins').textContent='0';$('nm-near').textContent='0';$('nm-msg').textContent='';$('nm-comment').textContent=''}
+
+initNearMiss();
+
+// ================================================================
+// RISK/REWARD GAME
+// ================================================================
+const PRIZES_CHAIN=['✏️ مداد','📒 دفتر','📚 کتاب','🎨 جعبه رنگ','🎁 هدیه ویژه','🏆 جایزه بزرگ','🌟 جایزه طلایی'];
+let riskState=null;
+
+function startRiskGame(){
+  const names=$('risk-names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(names.length<2){alert('حداقل ۲ نفر');return;}
+  riskState={
+    players:shuffle(names).map(n=>({name:n,prize:PRIZES_CHAIN[0],stage:0,out:false,log:''})),
+    currentPlayerIdx:0,log:[],turn:0
+  };
+  $('risk-setup-div').classList.add('hidden');$('risk-game-div').classList.remove('hidden');
+  renderRiskGame();
+}
+
+function getRiskCurrentPlayer(){
+  if(!riskState)return null;
+  const p=riskState.players;
+  let idx=riskState.currentPlayerIdx;
+  let tries=0;
+  while(p[idx].out&&tries<p.length){idx=(idx+1)%p.length;tries++}
+  riskState.currentPlayerIdx=idx;
+  return p[idx].out?null:p[idx];
+}
+
+function renderRiskGame(){
+  const p=getRiskCurrentPlayer();
+  if(!p||riskState.players.every(x=>x.out)){
+    $('risk-status').innerHTML=`<div style="font-size:18px;font-weight:900;color:var(--gold);text-align:center">🏁 بازی تمام شد!</div>`;
+    $('risk-control').innerHTML=`<button class="btn-primary btn-red" onclick="resetRiskGame()">🔄 شروع مجدد</button>`;
+    renderRiskLog();return;
+  }
+  const nextPrize=PRIZES_CHAIN[Math.min(p.stage+1,PRIZES_CHAIN.length-1)];
+  const winPct=Math.max(25,75-p.stage*10);
+  $('risk-status').innerHTML=`
+    <div style="font-size:17px;font-weight:700;margin-bottom:6px">نوبت: ${p.name}</div>
+    <div class="current-prize">${p.prize}</div>
+    <div style="color:var(--muted);font-size:13px;margin-top:4px">جایزه بعدی اگر ببری: <span style="color:var(--gold)">${nextPrize}</span></div>
+    <div style="color:var(--muted);font-size:12px;margin-top:2px">احتمال برد این مرحله: <span style="color:var(--cyan)">${winPct}٪</span></div>`;
+  $('risk-control').innerHTML=`
+    <div class="risk-btns">
+      <button class="take-btn" onclick="riskTake(false)">✅ نگه‌دار<br><small>${p.prize}</small></button>
+      <button class="risk-btn2" onclick="riskTake(true)">🎲 ریسک کن<br><small>→ ${nextPrize}؟ (${winPct}٪)</small></button>
+    </div>`;
+  renderRiskLog();
+}
+
+function riskTake(doRisk){
+  const p=getRiskCurrentPlayer();if(!p)return;
+  const winPct=Math.max(25,75-p.stage*10)/100;
+  if(!doRisk){
+    riskState.log.unshift(`✅ ${p.name} جایزه «${p.prize}» را نگه داشت`);p.out=true;
+  }else{
+    const won=Math.random()<winPct;
+    if(won){
+      p.stage++;p.prize=PRIZES_CHAIN[Math.min(p.stage,PRIZES_CHAIN.length-1)];
+      riskState.log.unshift(`🎉 ${p.name} برد! جایزه: «${p.prize}»`);
+      if(p.stage>=PRIZES_CHAIN.length-1){riskState.log.unshift(`🏆 ${p.name} به بالاترین جایزه رسید!`);p.out=true;launchConfetti(true)}
+    }else{riskState.log.unshift(`💥 ${p.name} باخت! همه چیز از دست رفت ❌`);p.prize='❌';p.out=true}
+  }
+  // next player
+  riskState.currentPlayerIdx=(riskState.currentPlayerIdx+1)%riskState.players.length;
+  renderRiskGame();
+}
+
+function resetRiskGame(){
+  riskState=null;
+  $('risk-setup-div').classList.remove('hidden');$('risk-game-div').classList.add('hidden');
+}
+
+function renderRiskLog(){
+  const log=$('risk-log');if(!riskState||!riskState.log.length){log.innerHTML='';return}
+  log.innerHTML='<div class="card-label" style="margin-bottom:8px">📋 وقایع بازی:</div>'+
+    riskState.log.slice(0,8).map(l=>`<div style="font-size:12px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--border)">${l}</div>`).join('');
+}
+
+// ================================================================
+// EDUCATION — PROBABILITY CHART
+// ================================================================
+function buildProbChart(){
+  const container=$('prob-chart-demo');if(!container)return;
+  const stages=[{label:'مرحله ۱ (۱/۱۰)',prob:10},{label:'مرحله ۲ (۱/۳)',prob:33},{label:'مرحله ۳ (۱/۳)',prob:33},{label:'کل برنده شدن',prob:1.1}];
+  container.innerHTML=stages.map(s=>`
+    <div class="prob-row" style="margin-bottom:8px">
+      <span class="prob-label">${s.label}</span>
+      <div class="prob-bar-wrap">
+        <div class="prob-bar"><div class="prob-fill" style="width:${Math.min(s.prob*3,100)}%"></div></div>
+        <div style="font-size:11px;color:var(--cyan);text-align:left">${s.prob}٪</div>
+      </div>
+    </div>`).join('');
+}
+
+setTimeout(buildProbChart,200);
+
+// ================================================================
+// QUIZ
+// ================================================================
+function checkQuiz(btn,qid){
+  const isCorrect=btn.getAttribute('data-correct')==='true';
+  const parent=btn.parentElement;
+  parent.querySelectorAll('.quiz-option').forEach(b=>{
+    b.disabled=true;
+    if(b.getAttribute('data-correct')==='true')b.classList.add('correct');
+  });
+  if(!isCorrect)btn.classList.add('wrong');
+  const fb=$(qid+'-feedback');
+  fb.classList.add('show',isCorrect?'correct':'wrong');
+  if(!isCorrect)fb.textContent='❌ اشتباه! جواب سبز رنگ درست است.';
+}
+
+</script>
+</body>
+</html>
