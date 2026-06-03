@@ -1,0 +1,2892 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 قرعه‌کشی صندوق</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --gold: #fbbf24;
+    --gold2: #f59e0b;
+    --pink: #ec4899;
+    --purple: #a855f7;
+    --cyan: #22d3ee;
+    --red: #ef4444;
+    --green: #22c55e;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --glow: 0 0 40px rgba(251,191,36,0.2);
+    --grad: linear-gradient(135deg, var(--gold), var(--pink), var(--purple));
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(168,85,247,0.06) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(251,191,36,0.05) 0%, transparent 60%);
+  }
+
+  /* ===== MAIN TABS ===== */
+  .main-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0 16px;
+    gap: 4px;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .main-tab {
+    padding: 14px 20px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .main-tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  .main-tab:hover { color: var(--text); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== RAFFLE SECTION ===== */
+  .raffle-wrap {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .page-header .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 900;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .page-header p {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* Mode selector */
+  .mode-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .mode-btn {
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: right;
+    color: var(--muted);
+  }
+
+  .mode-btn.active {
+    background: var(--grad);
+    color: white;
+    box-shadow: 0 4px 20px rgba(251,191,36,0.3);
+  }
+
+  .mode-btn .mode-title { font-size: 14px; font-weight: 700; }
+  .mode-btn .mode-hint { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+  .mode-btn .mode-icon { font-size: 18px; }
+  .mode-btn-inner { display: flex; justify-content: space-between; align-items: center; }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .card-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 10px;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+  /* Participant list */
+  .participant-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 44vh;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  .participant-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .photo-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    border: 1px dashed rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 18px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .photo-btn:hover { border-color: var(--gold); }
+  .photo-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+  .photo-remove {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 16px;
+    height: 16px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    cursor: pointer;
+  }
+
+  .name-input, .phone-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    text-align: right;
+    transition: border-color 0.2s;
+  }
+
+  .phone-input { width: 120px; flex: 0 0 120px; }
+
+  .name-input:focus, .phone-input:focus {
+    outline: none;
+    border-color: rgba(251,191,36,0.4);
+  }
+
+  .name-input::placeholder, .phone-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+  .del-btn {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .del-btn:hover { color: var(--red); border-color: rgba(239,68,68,0.4); }
+
+  .add-row-btn {
+    width: 100%;
+    background: none;
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+  }
+
+  .add-row-btn:hover { color: var(--text); border-color: rgba(251,191,36,0.4); }
+
+  /* Bulk input */
+  .bulk-area {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+
+  .bulk-area.open { max-height: 200px; }
+
+  .bulk-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    text-align: right;
+    resize: none;
+    margin-bottom: 8px;
+  }
+
+  .bulk-textarea:focus { outline: none; border-color: rgba(251,191,36,0.4); }
+
+  /* Winners count slider */
+  .slider-card { margin-bottom: 16px; }
+
+  .slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .slider-val {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  input[type=range] {
+    width: 100%;
+    accent-color: var(--gold);
+  }
+
+  .slider-limits {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Start button */
+  .start-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    background: var(--grad);
+    color: white;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--glow);
+    transition: transform 0.15s, opacity 0.2s;
+  }
+
+  .start-btn:hover:not(:disabled) { transform: scale(1.02); }
+  .start-btn:active:not(:disabled) { transform: scale(0.98); }
+  .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ===== RAFFLE STAGE ===== */
+  .stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .reset-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover { color: var(--text); }
+
+  .stage-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 20px;
+    text-align: center;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stage-idle { color: var(--muted); }
+  .stage-idle .idle-icon { font-size: 56px; margin-bottom: 16px; }
+
+  .stage-participant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .avatar {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+  }
+
+  .avatar.md { width: 96px; height: 96px; }
+  .avatar.lg { width: 140px; height: 140px; border-width: 3px; }
+  .avatar.glow { border-color: var(--gold); box-shadow: 0 0 30px rgba(251,191,36,0.4); }
+  .avatar.strike img { filter: grayscale(1) opacity(0.5); }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .spin-name {
+    font-size: clamp(26px, 6vw, 40px);
+    font-weight: 900;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: opacity 0.1s;
+  }
+
+  .reveal-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .reveal-label.eliminated { color: var(--red); }
+
+  .reveal-name {
+    font-size: clamp(28px, 7vw, 48px);
+    font-weight: 900;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(251,191,36,0.3));
+  }
+
+  .reveal-name.eliminated {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: var(--red);
+    text-decoration: line-through;
+  }
+
+  .reveal-phone {
+    margin-top: 6px;
+  }
+
+  .call-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.4);
+    border-radius: 20px;
+    color: var(--green);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .call-btn:hover { background: rgba(34,197,94,0.25); }
+
+  .spin-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    background: var(--grad);
+    color: white;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--glow);
+    transition: transform 0.15s, opacity 0.2s;
+    margin-bottom: 16px;
+  }
+
+  .spin-btn:hover:not(:disabled) { transform: scale(1.02); }
+  .spin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Winners list */
+  .winners-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 10px;
+    text-align: right;
+  }
+
+  .winner-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    animation: slideIn 0.3s ease;
+  }
+
+  .winner-item-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .winner-thumb {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .winner-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .winner-name {
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .winner-name.eliminated { color: var(--muted); text-decoration: line-through; }
+
+  .winner-phone-link {
+    font-size: 12px;
+    color: var(--green);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .winner-medal { font-size: 22px; }
+
+  .winner-num {
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 24px;
+    text-align: left;
+  }
+
+  /* Done screen */
+  .done-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 24px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .done-trophy { font-size: 56px; margin-bottom: 12px; }
+  .done-title { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+  .done-sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+  /* ===== LOTTERY TAB ===== */
+  .lottery-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+
+  .lottery-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .lottery-header h1 {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+
+  .lottery-header p { color: var(--muted); font-size: 13px; }
+
+  /* Lottery tabs */
+  .lottery-sub-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+
+  .lottery-sub-tab {
+    flex: 1;
+    padding: 9px 12px;
+    background: none;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .lottery-sub-tab.active {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: white;
+    font-weight: 700;
+  }
+
+  .lottery-sub-content { display: none; }
+  .lottery-sub-content.active { display: block; }
+
+  /* Weighted lottery */
+  .wl-info {
+    background: rgba(34,211,238,0.06);
+    border: 1px solid rgba(34,211,238,0.2);
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .wl-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    animation: slideIn 0.2s ease;
+  }
+
+  .wl-name {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    text-align: right;
+  }
+
+  .wl-phone {
+    width: 130px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    text-align: right;
+  }
+
+  .wl-shares {
+    width: 70px;
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 10px;
+    padding: 9px 10px;
+    color: var(--gold);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .wl-name:focus, .wl-phone:focus, .wl-shares:focus {
+    outline: none;
+    border-color: rgba(34,211,238,0.4);
+  }
+
+  .wl-pct {
+    font-size: 11px;
+    color: var(--cyan);
+    min-width: 40px;
+    text-align: center;
+  }
+
+  .wl-result {
+    background: var(--card);
+    border: 1px solid rgba(34,211,238,0.3);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 16px;
+    animation: slideIn 0.3s ease;
+  }
+
+  .wl-winner-name {
+    font-size: 32px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 10px 0;
+  }
+
+  .prob-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0 4px;
+  }
+
+  .prob-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .draw-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: white;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.15s, opacity 0.2s;
+    box-shadow: 0 0 30px rgba(34,211,238,0.2);
+  }
+
+  .draw-btn:hover:not(:disabled) { transform: scale(1.02); }
+  .draw-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Spinning wheel */
+  .wheel-wrap { text-align: center; }
+  .wheel-canvas-wrap {
+    position: relative;
+    display: inline-block;
+    margin: 16px auto;
+  }
+
+  canvas#wheel { display: block; }
+
+  .wheel-pointer {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .wheel-result {
+    background: var(--card);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 16px;
+    animation: slideIn 0.3s ease;
+  }
+
+  .wheel-winner { font-size: 28px; font-weight: 900; color: var(--gold); }
+
+  /* Dice */
+  .dice-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+  }
+
+  .dice-config {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .dice-config label { font-size: 14px; color: var(--muted); }
+  .dice-config select, .dice-config input[type=number] {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+  }
+
+  .dice-faces {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .die {
+    width: 70px;
+    height: 70px;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .die.rolling {
+    animation: rollDie 0.08s linear infinite;
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(251,191,36,0.3);
+  }
+
+  @keyframes rollDie {
+    0% { transform: rotate(-3deg) scale(0.95); }
+    50% { transform: rotate(3deg) scale(1.05); }
+    100% { transform: rotate(-3deg) scale(0.95); }
+  }
+
+  .die-val { font-size: 28px; font-weight: 900; color: var(--gold); }
+  .dice-sum { font-size: 24px; font-weight: 700; color: var(--cyan); }
+
+  /* Multi-stage raffle */
+  .multi-stage-info {
+    background: rgba(168,85,247,0.06);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    color: var(--muted);
+  }
+
+  .stages-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .stage-bubble {
+    background: rgba(168,85,247,0.1);
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--purple);
+    transition: all 0.3s;
+  }
+
+  .stage-bubble.active-stage {
+    background: rgba(168,85,247,0.3);
+    box-shadow: 0 0 16px rgba(168,85,247,0.3);
+  }
+
+  .stage-bubble.done-stage {
+    background: rgba(34,197,94,0.1);
+    border-color: rgba(34,197,94,0.3);
+    color: var(--green);
+  }
+
+  .stage-arrow { color: var(--muted); font-size: 20px; }
+
+  /* Risk game */
+  .risk-game-wrap { }
+
+  .risk-status {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .current-prize {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .risk-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .take-btn {
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.4);
+    color: var(--green);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .take-btn:hover { background: rgba(34,197,94,0.25); }
+
+  .risk-btn {
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: var(--red);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .risk-btn:hover { background: rgba(239,68,68,0.25); }
+
+  /* Gamble tab */
+  .gamble-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+
+  .gamble-sub-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+
+  .gamble-sub-tab {
+    flex: 1;
+    padding: 8px 10px;
+    background: none;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .gamble-sub-tab.active {
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    color: white;
+    font-weight: 700;
+  }
+
+  .gamble-sub-content { display: none; }
+  .gamble-sub-content.active { display: block; }
+
+  /* Slots */
+  .slots-machine {
+    background: linear-gradient(135deg, #1a0a0a, #2a1010);
+    border: 2px solid #7f1d1d;
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slots-machine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top, rgba(239,68,68,0.1), transparent 60%);
+  }
+
+  .slots-reels {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 20px 0;
+  }
+
+  .reel-window {
+    width: 80px;
+    height: 80px;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid #7f1d1d;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .reel-symbol {
+    transition: none;
+    display: block;
+    line-height: 80px;
+  }
+
+  .reel-spinning .reel-symbol {
+    animation: reelSpin 0.1s linear infinite;
+  }
+
+  @keyframes reelSpin {
+    0% { transform: translateY(-40px); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(40px); opacity: 0; }
+  }
+
+  .slots-result {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 8px 0;
+    min-height: 28px;
+  }
+
+  .slots-result.win { color: var(--gold); }
+  .slots-result.lose { color: var(--red); }
+
+  .slots-btn {
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: 0 4px 20px rgba(239,68,68,0.3);
+    transition: transform 0.1s;
+  }
+
+  .slots-btn:hover { transform: scale(1.03); }
+  .slots-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Probability lesson */
+  .prob-lesson {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+
+  .prob-lesson h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .prob-lesson p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+
+  .prob-lesson .highlight {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .prob-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .prob-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .prob-label { min-width: 80px; color: var(--muted); font-size: 12px; text-align: right; }
+  .prob-bar-wrap { flex: 1; }
+
+  /* Decision timer */
+  .timer-ring {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0;
+  }
+
+  .timer-svg circle { stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.1s linear; }
+
+  .timer-text {
+    font-size: 22px;
+    font-weight: 900;
+    fill: var(--gold);
+  }
+
+  /* Education tab */
+  .edu-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+
+  .edu-sub-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+
+  .edu-sub-tab {
+    flex: 1;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .edu-sub-tab.active {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-weight: 700;
+  }
+
+  .edu-sub-content { display: none; }
+  .edu-sub-content.active { display: block; }
+
+  .edu-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+
+  .edu-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .edu-card p, .edu-card li {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 2;
+  }
+
+  .edu-card ul { padding-right: 20px; }
+
+  .edu-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .edu-table th {
+    background: rgba(255,255,255,0.05);
+    padding: 8px;
+    text-align: right;
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .edu-table td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .quiz-option {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    margin-bottom: 8px;
+    text-align: right;
+    transition: all 0.2s;
+  }
+
+  .quiz-option:hover:not(:disabled) { border-color: rgba(251,191,36,0.4); }
+  .quiz-option.correct { background: rgba(34,197,94,0.15); border-color: var(--green); color: var(--green); }
+  .quiz-option.wrong { background: rgba(239,68,68,0.1); border-color: var(--red); color: var(--red); }
+
+  .quiz-feedback {
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+    line-height: 1.7;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--green); }
+  .quiz-feedback.wrong { background: rgba(239,68,68,0.08); color: var(--red); }
+
+  /* Utils */
+  .text-gold { color: var(--gold); }
+  .text-cyan { color: var(--cyan); }
+  .text-purple { color: var(--purple); }
+  .text-red { color: var(--red); }
+  .text-green { color: var(--green); }
+  .text-muted { color: var(--muted); }
+  .text-center { text-align: center; }
+
+  .flex { display: flex; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+  .gap-2 { gap: 8px; }
+  .mb-2 { margin-bottom: 8px; }
+  .mt-2 { margin-top: 8px; }
+
+  .hidden { display: none !important; }
+
+  /* Confetti canvas */
+  #confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Scroll */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+  .pulse { animation: pulse 1.5s ease infinite; }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .bounce-in { animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  .info-box {
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .info-box.blue { background: rgba(34,211,238,0.05); border: 1px solid rgba(34,211,238,0.15); }
+  .info-box.purple { background: rgba(168,85,247,0.05); border: 1px solid rgba(168,85,247,0.15); }
+  .info-box.gold { background: rgba(251,191,36,0.05); border: 1px solid rgba(251,191,36,0.15); }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- MAIN TABS -->
+<nav class="main-tabs">
+  <button class="main-tab active" onclick="showMainTab('raffle', this)">🎯 قرعه‌کشی</button>
+  <button class="main-tab" onclick="showMainTab('lottery', this)">🎫 بخت‌آزمایی</button>
+  <button class="main-tab" onclick="showMainTab('gamble', this)">🎰 قمار و بازی</button>
+  <button class="main-tab" onclick="showMainTab('edu', this)">📚 آموزش</button>
+</nav>
+
+<!-- ================================================================ -->
+<!-- TAB 1: RAFFLE -->
+<!-- ================================================================ -->
+<div id="tab-raffle" class="tab-content active">
+  <div class="raffle-wrap">
+    <div class="page-header">
+      <div class="badge">Raffle</div>
+      <h1>🎯 قرعه‌کشی صندوق</h1>
+      <p>انتخاب چند برنده یا حذف تدریجی — با عکس و جشن</p>
+    </div>
+
+    <!-- Setup screen -->
+    <div id="raffle-setup">
+      <div class="mode-selector">
+        <button class="mode-btn active" id="mode-pick-btn" onclick="setRaffleMode('pick')">
+          <div class="mode-btn-inner">
+            <span class="mode-icon">🎁</span>
+            <span>
+              <div class="mode-title">انتخاب برنده</div>
+              <div class="mode-hint">چند نفر برنده شوند</div>
+            </span>
+          </div>
+        </button>
+        <button class="mode-btn" id="mode-elim-btn" onclick="setRaffleMode('eliminate')">
+          <div class="mode-btn-inner">
+            <span class="mode-icon">💥</span>
+            <span>
+              <div class="mode-title">حذف تا برنده</div>
+              <div class="mode-hint">یکی‌یکی حذف، آخری برنده</div>
+            </span>
+          </div>
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-label" id="part-count-label">شرکت‌کنندگان (0)</span>
+          <button class="btn-ghost" onclick="toggleBulk()">📋 افزودن دسته‌ای</button>
+        </div>
+
+        <div class="bulk-area" id="bulk-area">
+          <textarea class="bulk-textarea" id="bulk-text" rows="4" placeholder="علی&#10;سارا&#10;محمد&#10;..."></textarea>
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <button class="btn-ghost" onclick="importBulk()">➕ اضافه کن</button>
+          </div>
+        </div>
+
+        <div class="participant-list" id="participant-list"></div>
+
+        <button class="add-row-btn" onclick="addParticipantRow()">+ افزودن نفر</button>
+      </div>
+
+      <div class="card slider-card" id="winners-count-card">
+        <div class="slider-row">
+          <span class="card-label">تعداد برندگان</span>
+          <span class="slider-val" id="winners-val">1</span>
+        </div>
+        <input type="range" id="winners-slider" min="1" max="1" value="1" oninput="updateWinnersCount(this.value)">
+        <div class="slider-limits"><span>۱</span><span id="max-winners-label">۱</span></div>
+      </div>
+
+      <div class="card hidden" id="elim-info-card">
+        <p style="text-align:center;color:var(--muted);font-size:13px">🔄 در این حالت یکی‌یکی حذف می‌شوند و آخرین نفر باقی‌مانده برنده است.</p>
+      </div>
+
+      <button class="start-btn" id="start-raffle-btn" onclick="startRaffle()" disabled>🎯 شروع قرعه‌کشی</button>
+    </div>
+
+    <!-- Stage screen -->
+    <div id="raffle-stage" class="hidden">
+      <div class="stage-header">
+        <button class="reset-btn" onclick="resetRaffle()">↻ ریست</button>
+        <span id="remaining-label"></span>
+      </div>
+
+      <div class="stage-box" id="stage-box">
+        <div class="stage-idle" id="stage-idle">
+          <div class="idle-icon" id="idle-icon">🎁</div>
+          <p>برای انتخاب نفر بعدی دکمه را بزن</p>
+        </div>
+        <div class="stage-participant hidden" id="stage-participant">
+          <div id="reveal-label-el" class="reveal-label">Winner</div>
+          <div class="avatar lg" id="stage-avatar">🎟️</div>
+          <div id="stage-name" class="reveal-name"></div>
+          <div id="stage-phone-div" class="reveal-phone hidden">
+            <a id="stage-call-link" href="#" class="call-btn">📞 تماس مستقیم</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="spin-btn" id="spin-btn" onclick="handleSpin()">🎲 انتخاب نفر بعدی</button>
+
+      <div id="picked-list"></div>
+    </div>
+
+    <!-- Done screen -->
+    <div id="raffle-done" class="hidden">
+      <div class="done-card">
+        <div class="done-trophy">🏆</div>
+        <div class="done-title" id="done-title">قرعه‌کشی پایان یافت</div>
+        <div class="done-sub" id="done-sub"></div>
+        <div id="done-final-winner"></div>
+      </div>
+      <button class="start-btn" onclick="resetRaffle()">🔄 شروع مجدد</button>
+      <div id="done-list" class="mt-2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB 2: LOTTERY (بخت‌آزمایی) -->
+<!-- ================================================================ -->
+<div id="tab-lottery" class="tab-content">
+  <div class="lottery-wrap">
+    <div class="lottery-header">
+      <h1>🎫 بخت‌آزمایی پیشرفته</h1>
+      <p>چرخ شانس، سهام وزن‌دار، تاس و قرعه‌کشی چندمرحله‌ای</p>
+    </div>
+
+    <div class="lottery-sub-tabs">
+      <button class="lottery-sub-tab active" onclick="showLotterySub('weighted', this)">⚖️ سهام وزن‌دار</button>
+      <button class="lottery-sub-tab" onclick="showLotterySub('wheel', this)">🎡 چرخ شانس</button>
+      <button class="lottery-sub-tab" onclick="showLotterySub('dice', this)">🎲 تاس</button>
+      <button class="lottery-sub-tab" onclick="showLotterySub('multi', this)">🏆 چندمرحله‌ای</button>
+    </div>
+
+    <!-- Weighted lottery -->
+    <div id="lottery-weighted" class="lottery-sub-content active">
+      <div class="info-box blue">
+        ⚖️ هر نفر می‌تواند تعداد سهم متفاوتی داشته باشد. احتمال برنده شدن هر نفر برابر با <strong style="color:var(--cyan)">سهم او تقسیم بر مجموع سهام</strong> است.
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-label">لیست شرکت‌کنندگان</span>
+          <span class="card-label text-gold" id="wl-total-shares">مجموع: 0 سهم</span>
+        </div>
+        <div id="wl-list"></div>
+        <button class="add-row-btn" onclick="addWLRow()">+ افزودن نفر</button>
+      </div>
+
+      <div id="wl-prob-list" class="card hidden">
+        <div class="card-header"><span class="card-label">احتمال برنده شدن</span></div>
+        <div id="wl-prob-items"></div>
+      </div>
+
+      <button class="draw-btn" onclick="runWeightedDraw()" id="wl-draw-btn" disabled>🎯 قرعه‌کشی</button>
+
+      <div id="wl-result" class="wl-result hidden"></div>
+    </div>
+
+    <!-- Wheel -->
+    <div id="lottery-wheel" class="lottery-sub-content">
+      <div class="card">
+        <div class="card-header"><span class="card-label">اسامی برای چرخ</span></div>
+        <textarea id="wheel-names" class="bulk-textarea" rows="5" placeholder="علی&#10;سارا&#10;محمد&#10;زهرا&#10;حسین" style="margin-bottom:0"></textarea>
+      </div>
+      <div class="wheel-wrap">
+        <button class="draw-btn" onclick="buildWheel()" style="margin-bottom:12px">🔨 ساخت چرخ</button>
+        <div class="wheel-canvas-wrap">
+          <canvas id="wheel" width="300" height="300"></canvas>
+          <div class="wheel-pointer">▼</div>
+        </div>
+        <button class="draw-btn" id="spin-wheel-btn" onclick="spinWheel()" disabled>🌀 چرخاندن!</button>
+        <div id="wheel-result" class="wheel-result hidden"></div>
+      </div>
+    </div>
+
+    <!-- Dice -->
+    <div id="lottery-dice" class="lottery-sub-content">
+      <div class="dice-wrap">
+        <div class="dice-config">
+          <label>تعداد تاس:</label>
+          <input type="number" id="dice-count" value="2" min="1" max="6" style="width:70px">
+          <label>اندازه:</label>
+          <select id="dice-size">
+            <option value="6">D6</option>
+            <option value="4">D4</option>
+            <option value="8">D8</option>
+            <option value="10">D10</option>
+            <option value="12">D12</option>
+            <option value="20">D20</option>
+          </select>
+        </div>
+        <div class="dice-faces" id="dice-faces"></div>
+        <div class="dice-sum hidden" id="dice-sum"></div>
+        <button class="draw-btn" onclick="rollDice()" id="roll-btn" style="max-width:200px">🎲 انداختن تاس</button>
+      </div>
+    </div>
+
+    <!-- Multi-stage -->
+    <div id="lottery-multi" class="lottery-sub-content">
+      <div class="info-box purple">
+        🏆 قرعه‌کشی سه‌مرحله‌ای: در هر مرحله تعداد کمتری برنده می‌شوند تا یک برنده نهایی انتخاب شود.
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-label">اسامی</span></div>
+        <textarea id="multi-names" class="bulk-textarea" rows="5" placeholder="علی&#10;سارا&#10;محمد&#10;زهرا&#10;حسین&#10;رضا&#10;مریم&#10;احمد&#10;فاطمه&#10;نوید" style="margin-bottom:0"></textarea>
+      </div>
+      <div id="stages-visual" class="stages-visual hidden"></div>
+      <div id="multi-stage-box"></div>
+      <button class="draw-btn" id="multi-start-btn" onclick="startMultiStage()">🚀 شروع قرعه‌کشی</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB 3: GAMBLE & GAMES -->
+<!-- ================================================================ -->
+<div id="tab-gamble" class="tab-content">
+  <div class="gamble-wrap">
+    <div class="lottery-header">
+      <h1 style="background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">🎰 بازی‌های شانس</h1>
+      <p>تجربه مکانیک‌های قمار — بدون پول واقعی</p>
+    </div>
+
+    <div class="gamble-sub-tabs">
+      <button class="gamble-sub-tab active" onclick="showGambleSub('slots', this)">🎰 اسلات</button>
+      <button class="gamble-sub-tab" onclick="showGambleSub('risk', this)">⚡ ریسک/جایزه</button>
+      <button class="gamble-sub-tab" onclick="showGambleSub('stages', this)">📊 چندمرحله‌ای</button>
+    </div>
+
+    <!-- Slots -->
+    <div id="gamble-slots" class="gamble-sub-content active">
+      <div class="info-box gold">🎰 این بازی مکانیک <strong style="color:var(--gold)">Slot Machine</strong> را شبیه‌سازی می‌کند. احتمال برد واقعی را در تب آموزش بخوانید.</div>
+      <div class="slots-machine">
+        <div style="font-size:22px;font-weight:900;color:var(--gold);margin-bottom:8px;position:relative">🎰 ماشین شانس</div>
+        <div class="slots-reels" id="slots-reels"></div>
+        <div class="slots-result" id="slots-result"></div>
+        <div style="color:var(--muted);font-size:12px;margin-bottom:8px">امتیاز: <span id="slots-score" style="color:var(--gold);font-weight:700">0</span></div>
+        <button class="slots-btn" id="slots-btn" onclick="spinSlots()">🎰 بزن!</button>
+      </div>
+    </div>
+
+    <!-- Risk/Reward -->
+    <div id="gamble-risk" class="gamble-sub-content">
+      <div class="info-box gold">⚡ بازی <strong style="color:var(--gold)">«ببر، بباز یا انتخاب کن»</strong>: جایزه‌ات را نگه دار یا برای جایزه بزرگتر ریسک کن!</div>
+      <div id="risk-setup-div">
+        <div class="card">
+          <div class="card-header"><span class="card-label">نام بازیکن‌ها (هر خط یک نفر)</span></div>
+          <textarea id="risk-names" class="bulk-textarea" rows="5" placeholder="علی&#10;سارا&#10;محمد&#10;زهرا&#10;حسین"></textarea>
+        </div>
+        <button class="draw-btn" onclick="startRiskGame()" style="background:linear-gradient(135deg,#ef4444,#f97316)">⚡ شروع بازی</button>
+      </div>
+      <div id="risk-game-div" class="hidden">
+        <div class="risk-status" id="risk-status"></div>
+        <div id="risk-control"></div>
+        <div id="risk-log" class="card" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- Multi-stage gamble -->
+    <div id="gamble-stages" class="gamble-sub-content">
+      <div class="info-box purple">📊 قرعه‌کشی با <strong style="color:var(--purple)">فشار زمانی</strong>: در هر مرحله فقط چند ثانیه داری تصمیم بگیری!</div>
+      <div id="timed-setup">
+        <div class="card">
+          <div class="card-header"><span class="card-label">شرکت‌کنندگان</span></div>
+          <textarea id="timed-names" class="bulk-textarea" rows="5" placeholder="علی&#10;سارا&#10;محمد&#10;زهرا&#10;حسین&#10;رضا&#10;مریم&#10;احمد&#10;فاطمه&#10;نوید"></textarea>
+        </div>
+        <button class="draw-btn" onclick="startTimedGame()" style="background:linear-gradient(135deg,#a855f7,#7c3aed)">⏱️ شروع با فشار زمانی</button>
+      </div>
+      <div id="timed-game" class="hidden"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB 4: EDUCATION -->
+<!-- ================================================================ -->
+<div id="tab-edu" class="tab-content">
+  <div class="edu-wrap">
+    <div class="lottery-header">
+      <h1 style="background:linear-gradient(135deg,#22c55e,#16a34a);-webkit-background-clip:text;-webkit-text-fill-color:transparent">📚 آموزش احتمال و قمار</h1>
+      <p>درک علمی مکانیک‌های شانس و ریسک</p>
+    </div>
+
+    <div class="edu-sub-tabs">
+      <button class="edu-sub-tab active" onclick="showEduSub('prob', this)">📊 احتمال</button>
+      <button class="edu-sub-tab" onclick="showEduSub('mechanics', this)">⚙️ مکانیک‌ها</button>
+      <button class="edu-sub-tab" onclick="showEduSub('quiz', this)">❓ آزمون</button>
+    </div>
+
+    <!-- Probability -->
+    <div id="edu-prob" class="edu-sub-content active">
+      <div class="edu-card">
+        <h3>🎲 احتمال چیست؟</h3>
+        <p>احتمال یعنی اینکه چقدر <span class="highlight">امکان دارد یک رویداد اتفاق بیفتد</span>. از ۰ (ناممکن) تا ۱ (حتمی) یا به صورت درصد.</p>
+        <p>مثال: احتمال شیر در انداختن سکه = ۱/۲ = ۵۰٪</p>
+      </div>
+
+      <div class="edu-card">
+        <h3>📉 کاهش احتمال در مراحل</h3>
+        <p>در قرعه‌کشی چندمرحله‌ای، احتمال برنده شدن هر مرحله کمتر می‌شود:</p>
+        <div class="prob-chart" id="prob-chart-demo"></div>
+        <p style="margin-top:8px">احتمال کلی = ضرب احتمال هر مرحله در هم</p>
+      </div>
+
+      <div class="edu-card">
+        <h3>⚖️ میانگین وزن‌دار (سهام)</h3>
+        <p>اگر علی ۵ سهم و سارا ۱ سهم داشته باشد:</p>
+        <ul>
+          <li>احتمال علی = ۵/(۵+۱) = ۸۳٪</li>
+          <li>احتمال سارا = ۱/(۵+۱) = ۱۷٪</li>
+        </ul>
+        <p style="margin-top:8px">سهام بیشتر = احتمال بیشتر. دقیقاً مثل لاتاری واقعی!</p>
+      </div>
+
+      <div class="edu-card">
+        <h3>🎰 چرا ماشین‌های اسلات همیشه برنده‌اند؟</h3>
+        <p>احتمال برد: <span class="highlight">~۳٪</span> در هر چرخش</p>
+        <p>برای هر ۱۰۰ تومان شرط، به طور متوسط <span class="highlight text-red">۹۰ تومان</span> دریافت می‌کنید</p>
+        <p>این «لبه خانه» (House Edge) نام دارد و همیشه به نفع قمارخانه است.</p>
+      </div>
+    </div>
+
+    <!-- Mechanics -->
+    <div id="edu-mechanics" class="edu-sub-content">
+      <div class="edu-card">
+        <h3>⚙️ مکانیک‌های رایج قمار</h3>
+        <table class="edu-table">
+          <tr><th>مکانیک</th><th>توضیح</th><th>هدف روانشناختی</th></tr>
+          <tr><td>ریسک/پاداش</td><td>نگه دار یا ریسک کن</td><td>وسوسه برد بیشتر</td></tr>
+          <tr><td>همه یا هیچ</td><td>باختی؟ هیچ چیز نمی‌گیری</td><td>ترس از دست دادن</td></tr>
+          <tr><td>مراحل چندگانه</td><td>احتمال کمتر در هر مرحله</td><td>حس «نزدیک بود»</td></tr>
+          <tr><td>فشار زمانی</td><td>چند ثانیه برای تصمیم</td><td>تصمیم احساسی</td></tr>
+          <tr><td>برد کوچک مکرر</td><td>جوایز کم اما مداوم</td><td>عادت‌سازی</td></tr>
+          <tr><td>کنترل توهمی</td><td>حس تأثیرگذاری روی نتیجه</td><td>احساس مهارت</td></tr>
+        </table>
+      </div>
+
+      <div class="edu-card">
+        <h3>🧠 سوگیری‌های شناختی</h3>
+        <ul>
+          <li><strong style="color:var(--gold)">مغالطه قمارباز:</strong> «۵ بار شیر آمده، پس خط می‌آید» — اشتباه!</li>
+          <li><strong style="color:var(--gold)">اثر آب‌خوری:</strong> وقتی نزدیک به برد بودی بیشتر بازی می‌کنی</li>
+          <li><strong style="color:var(--gold)">زیان‌گریزی:</strong> ترس از باخت قوی‌تر از لذت برد است</li>
+          <li><strong style="color:var(--gold)">تداوم تعهد:</strong> «تا اینجا پول خرج کردم، ادامه می‌دهم»</li>
+        </ul>
+      </div>
+
+      <div class="edu-card">
+        <h3>🛡️ راهبردهای محافظت</h3>
+        <ul>
+          <li>همیشه قبل از بازی، حد ضرر تعیین کن</li>
+          <li>احتمال واقعی برنده شدن را محاسبه کن</li>
+          <li>وقتی هیجانی هستی، بازی نکن</li>
+          <li>«نزدیک بود» یعنی باختی، نه نیمه‌برد</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Quiz -->
+    <div id="edu-quiz" class="edu-sub-content">
+      <div class="edu-card">
+        <h3>❓ سوال ۱</h3>
+        <p style="margin-bottom:12px">اگر علی ۳ سهم و سارا ۷ سهم داشته باشد، احتمال برنده شدن علی چقدر است؟</p>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q1')">۵۰٪</button>
+        <button class="quiz-option" onclick="checkQuiz(this, true, 'q1')">۳۰٪</button>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q1')">۷۰٪</button>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q1')">۲۵٪</button>
+        <div class="quiz-feedback" id="q1-feedback">✅ درست! ۳/(۳+۷) = ۳/۱۰ = ۳۰٪. سهم کمتر = احتمال کمتر.</div>
+      </div>
+
+      <div class="edu-card">
+        <h3>❓ سوال ۲</h3>
+        <p style="margin-bottom:12px">در قرعه‌کشی ۳ مرحله‌ای (۱/۲ × ۱/۳ × ۱/۵)، احتمال برنده شدن چقدر است؟</p>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q2')">۳۳٪</button>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q2')">۱۰٪</button>
+        <button class="quiz-option" onclick="checkQuiz(this, true, 'q2')">۳.۳٪</button>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q2')">۵۰٪</button>
+        <div class="quiz-feedback" id="q2-feedback">✅ درست! ۱/۲ × ۱/۳ × ۱/۵ = ۱/۳۰ ≈ ۳.۳٪. احتمال‌ها در هم ضرب می‌شوند!</div>
+      </div>
+
+      <div class="edu-card">
+        <h3>❓ سوال ۳</h3>
+        <p style="margin-bottom:12px">«۱۰ بار پشت سر هم عدد آمده، پس حتماً شیر می‌آید» — این چه نوع خطایی است؟</p>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q3')">محاسبه اشتباه</button>
+        <button class="quiz-option" onclick="checkQuiz(this, true, 'q3')">مغالطه قمارباز</button>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q3')">تقلب</button>
+        <button class="quiz-option" onclick="checkQuiz(this, false, 'q3')">زیان‌گریزی</button>
+        <div class="quiz-feedback" id="q3-feedback">✅ درست! این «مغالطه قمارباز» است. هر انداختن سکه مستقل است و احتمال آن همیشه ۵۰٪ است.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// UTILS
+// ================================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function uid() {
+  return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+}
+
+// ================================================================
+// MAIN TABS
+// ================================================================
+function showMainTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ================================================================
+// CONFETTI
+// ================================================================
+const confCanvas = document.getElementById('confetti-canvas');
+const confCtx = confCanvas.getContext('2d');
+confCanvas.width = window.innerWidth;
+confCanvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  confCanvas.width = window.innerWidth;
+  confCanvas.height = window.innerHeight;
+});
+
+let confParticles = [];
+let confAnimId = null;
+
+function launchConfetti(gold = true) {
+  confParticles = [];
+  const colors = gold
+    ? ['#fbbf24','#ec4899','#a855f7','#22d3ee','#f97316']
+    : ['#ef4444','#f97316','#a855f7'];
+  for (let i = 0; i < 120; i++) {
+    confParticles.push({
+      x: Math.random() * confCanvas.width,
+      y: -10,
+      vx: (Math.random() - 0.5) * 4,
+      vy: Math.random() * 3 + 2,
+      size: Math.random() * 8 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 10
+    });
+  }
+  if (confAnimId) cancelAnimationFrame(confAnimId);
+  animateConf();
+}
+
+function animateConf() {
+  confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+  confParticles = confParticles.filter(p => p.y < confCanvas.height + 20);
+  confParticles.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
+    confCtx.save();
+    confCtx.translate(p.x, p.y);
+    confCtx.rotate(p.rot * Math.PI / 180);
+    confCtx.fillStyle = p.color;
+    confCtx.fillRect(-p.size/2, -p.size/2, p.size, p.size/2);
+    confCtx.restore();
+  });
+  if (confParticles.length) confAnimId = requestAnimationFrame(animateConf);
+}
+
+// ================================================================
+// RAFFLE
+// ================================================================
+let raffleMode = 'pick';
+let participants = [];
+let winnersCount = 1;
+let raffleStarted = false;
+let raffleOrder = [];
+let rafflePicked = [];
+let rafflePhase = 'idle';
+let raffleSpinTimer = null;
+const SPIN_DURATION = 4200;
+
+function setRaffleMode(mode) {
+  raffleMode = mode;
+  document.getElementById('mode-pick-btn').classList.toggle('active', mode === 'pick');
+  document.getElementById('mode-elim-btn').classList.toggle('active', mode === 'eliminate');
+  document.getElementById('winners-count-card').classList.toggle('hidden', mode === 'eliminate');
+  document.getElementById('elim-info-card').classList.toggle('hidden', mode === 'pick');
+  document.getElementById('start-raffle-btn').textContent = mode === 'pick' ? '🎯 شروع قرعه‌کشی' : '💥 شروع حذف';
+  validateRaffle();
+}
+
+function renderParticipantList() {
+  const list = document.getElementById('participant-list');
+  list.innerHTML = '';
+  participants.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'participant-row';
+    row.id = 'row-' + p.id;
+    row.innerHTML = `
+      <div class="photo-btn" onclick="document.getElementById('file-${p.id}').click()">
+        ${p.photo ? `<img src="${p.photo}"><span class="photo-remove" onclick="event.stopPropagation();removePhoto('${p.id}')">✕</span>` : '📷'}
+      </div>
+      <input type="file" accept="image/*" id="file-${p.id}" class="hidden" onchange="loadPhoto('${p.id}', this)">
+      <input class="name-input" placeholder="نام شرکت‌کننده" value="${p.name}" oninput="updatePart('${p.id}','name',this.value)">
+      <input class="phone-input" placeholder="📞 شماره" value="${p.phone||''}" oninput="updatePart('${p.id}','phone',this.value)" type="tel">
+      <button class="del-btn" onclick="removePart('${p.id}')">✕</button>
+    `;
+    list.appendChild(row);
+  });
+  updatePartCount();
+  validateRaffle();
+}
+
+function addParticipantRow(name = '', phone = '') {
+  participants.push({ id: uid(), name, phone, photo: null });
+  renderParticipantList();
+  const inputs = document.querySelectorAll('#participant-list .name-input');
+  inputs[inputs.length - 1]?.focus();
+}
+
+function updatePart(id, key, val) {
+  const p = participants.find(x => x.id === id);
+  if (p) p[key] = val;
+  updatePartCount();
+  validateRaffle();
+}
+
+function removePart(id) {
+  participants = participants.filter(p => p.id !== id);
+  renderParticipantList();
+}
+
+function removePhoto(id) {
+  const p = participants.find(x => x.id === id);
+  if (p) { p.photo = null; renderParticipantList(); }
+}
+
+function loadPhoto(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const p = participants.find(x => x.id === id);
+    if (p) { p.photo = e.target.result; renderParticipantList(); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function updatePartCount() {
+  const valid = participants.filter(p => p.name.trim()).length;
+  document.getElementById('part-count-label').textContent = `شرکت‌کنندگان (${valid})`;
+  const max = Math.max(1, valid - 1);
+  const slider = document.getElementById('winners-slider');
+  slider.max = max;
+  document.getElementById('max-winners-label').textContent = max;
+  winnersCount = Math.min(winnersCount, max);
+  slider.value = winnersCount;
+  document.getElementById('winners-val').textContent = winnersCount;
+}
+
+function updateWinnersCount(val) {
+  winnersCount = parseInt(val);
+  document.getElementById('winners-val').textContent = val;
+}
+
+function validateRaffle() {
+  const valid = participants.filter(p => p.name.trim()).length;
+  const canStart = raffleMode === 'pick'
+    ? valid >= 2 && winnersCount >= 1
+    : valid >= 2;
+  document.getElementById('start-raffle-btn').disabled = !canStart;
+}
+
+function toggleBulk() {
+  document.getElementById('bulk-area').classList.toggle('open');
+}
+
+function importBulk() {
+  const lines = document.getElementById('bulk-text').value.split('\n').map(s => s.trim()).filter(Boolean);
+  lines.forEach(n => participants.push({ id: uid(), name: n, phone: '', photo: null }));
+  document.getElementById('bulk-text').value = '';
+  document.getElementById('bulk-area').classList.remove('open');
+  renderParticipantList();
+}
+
+function startRaffle() {
+  const valid = participants.filter(p => p.name.trim());
+  if (valid.length < 2) return;
+  raffleOrder = shuffle(valid);
+  rafflePicked = [];
+  rafflePhase = 'idle';
+  raffleStarted = true;
+
+  document.getElementById('raffle-setup').classList.add('hidden');
+  document.getElementById('raffle-stage').classList.remove('hidden');
+  document.getElementById('raffle-done').classList.add('hidden');
+
+  updateStageUI();
+}
+
+function resetRaffle() {
+  raffleStarted = false;
+  rafflePhase = 'idle';
+  if (raffleSpinTimer) clearTimeout(raffleSpinTimer);
+
+  document.getElementById('raffle-setup').classList.remove('hidden');
+  document.getElementById('raffle-stage').classList.add('hidden');
+  document.getElementById('raffle-done').classList.add('hidden');
+  document.getElementById('picked-list').innerHTML = '';
+}
+
+function getRafflePool() {
+  return raffleOrder.filter(p => !rafflePicked.find(d => d.id === p.id));
+}
+
+function updateStageUI() {
+  const pool = getRafflePool();
+  const target = raffleMode === 'pick' ? winnersCount : 1;
+  const remaining = raffleMode === 'pick'
+    ? `${target - rafflePicked.length} برنده باقی‌مانده`
+    : `${pool.length} نفر باقی‌مانده`;
+  document.getElementById('remaining-label').textContent = remaining;
+
+  const idleIcon = raffleMode === 'pick' ? '🎁' : '🌀';
+  document.getElementById('idle-icon').textContent = idleIcon;
+  const idleText = document.querySelector('#stage-idle p');
+  if (idleText) idleText.textContent = raffleMode === 'pick' ? 'برای انتخاب نفر بعدی دکمه را بزن' : 'برای حذف نفر بعدی دکمه را بزن';
+
+  updateSpinBtn();
+  renderPickedList();
+}
+
+function updateSpinBtn() {
+  const pool = getRafflePool();
+  const drawn = rafflePicked;
+  const target = raffleMode === 'pick' ? winnersCount : 1;
+  const isFinal = raffleMode === 'pick' ? drawn.length + 1 >= target : pool.length === 2;
+
+  let label;
+  if (rafflePhase === 'spinning') {
+    label = '⏳ در حال چرخش...';
+  } else if (raffleMode === 'pick') {
+    label = isFinal ? '🏆 انتخاب آخرین برنده' : '🎲 انتخاب نفر بعدی';
+  } else {
+    label = isFinal ? '💥 حذف نهایی — برنده مشخص شود' : '💥 حذف نفر بعدی';
+  }
+  const btn = document.getElementById('spin-btn');
+  btn.textContent = label;
+  btn.disabled = rafflePhase === 'spinning';
+}
+
+function handleSpin() {
+  const pool = getRafflePool();
+  if (!pool.length || rafflePhase === 'spinning') return;
+
+  const chosen = shuffle(pool)[0];
+  rafflePhase = 'spinning';
+  updateSpinBtn();
+
+  // Show spinning participant
+  document.getElementById('stage-idle').classList.add('hidden');
+  document.getElementById('stage-participant').classList.remove('hidden');
+  document.getElementById('reveal-label-el').textContent = '';
+
+  const start = Date.now();
+  let lastId = null;
+
+  const tick = () => {
+    const elapsed = Date.now() - start;
+    const progress = Math.min(elapsed / SPIN_DURATION, 1);
+
+    let candidates = pool.filter(p => p.id !== lastId);
+    if (!candidates.length) candidates = pool;
+    const display = candidates[Math.floor(Math.random() * candidates.length)];
+    lastId = display.id;
+
+    setStageParticipant(display, false, false, true);
+
+    if (progress >= 1) {
+      setStageParticipant(chosen, true, raffleMode === 'eliminate', false);
+      rafflePhase = raffleMode === 'eliminate' && pool.length > 1 ? 'revealed' : 'revealed_final';
+
+      rafflePicked.push(chosen);
+
+      const isDone = raffleMode === 'pick'
+        ? rafflePicked.length >= winnersCount
+        : getRafflePool().length === 1;
+
+      launchConfetti(raffleMode === 'pick' || getRafflePool().length <= 1);
+
+      if (isDone) {
+        setTimeout(() => showDone(), 1200);
+      } else {
+        rafflePhase = 'revealed';
+        updateStageUI();
+      }
+      return;
+    }
+
+    const delay = 80 + Math.pow(progress, 2.6) * 360;
+    raffleSpinTimer = setTimeout(tick, delay);
+  };
+
+  tick();
+}
+
+function setStageParticipant(p, reveal, eliminated, spinning) {
+  const avatar = document.getElementById('stage-avatar');
+  avatar.className = `avatar lg${reveal && !eliminated ? ' glow' : ''}${eliminated ? ' strike' : ''}`;
+  avatar.innerHTML = p.photo ? `<img src="${p.photo}" alt="${p.name}">` : '🎟️';
+
+  const nameEl = document.getElementById('stage-name');
+  nameEl.className = spinning ? 'spin-name' : (eliminated ? 'reveal-name eliminated' : 'reveal-name');
+  nameEl.textContent = p.name;
+
+  const labelEl = document.getElementById('reveal-label-el');
+  if (spinning) {
+    labelEl.textContent = '';
+  } else if (eliminated) {
+    labelEl.textContent = 'Eliminated';
+    labelEl.className = 'reveal-label eliminated';
+  } else {
+    labelEl.textContent = 'Winner';
+    labelEl.className = 'reveal-label';
+  }
+
+  const phoneDiv = document.getElementById('stage-phone-div');
+  if (reveal && p.phone && p.phone.trim()) {
+    phoneDiv.classList.remove('hidden');
+    const link = document.getElementById('stage-call-link');
+    link.href = 'tel:' + p.phone.trim();
+    link.textContent = '📞 ' + p.phone.trim();
+  } else {
+    phoneDiv.classList.add('hidden');
+  }
+}
+
+function showDone() {
+  document.getElementById('raffle-stage').classList.add('hidden');
+  document.getElementById('raffle-done').classList.remove('hidden');
+
+  if (raffleMode === 'eliminate') {
+    const winner = getRafflePool()[0] || rafflePicked[rafflePicked.length - 1];
+    document.getElementById('done-title').textContent = 'برنده نهایی';
+    document.getElementById('done-sub').textContent = `از بین ${raffleOrder.length} نفر`;
+    if (winner) {
+      document.getElementById('done-final-winner').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin:16px 0">
+          <div class="avatar lg glow bounce-in">${winner.photo ? `<img src="${winner.photo}">` : '🏆'}</div>
+          <div style="font-size:32px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${winner.name}</div>
+          ${winner.phone ? `<a href="tel:${winner.phone}" class="call-btn">📞 تماس با برنده</a>` : ''}
+        </div>
+      `;
+    }
+  } else {
+    document.getElementById('done-title').textContent = 'قرعه‌کشی پایان یافت';
+    document.getElementById('done-sub').textContent = `${winnersCount} نفر از ${raffleOrder.length} انتخاب شدند`;
+    document.getElementById('done-final-winner').innerHTML = '';
+  }
+
+  renderDoneList();
+}
+
+function renderPickedList() {
+  const container = document.getElementById('picked-list');
+  container.innerHTML = '';
+  if (!rafflePicked.length) return;
+
+  const title = document.createElement('div');
+  title.className = 'winners-title';
+  title.textContent = raffleMode === 'pick' ? `برندگان (${rafflePicked.length})` : `حذف‌شدگان (${rafflePicked.length})`;
+  container.appendChild(title);
+
+  const medals = ['🥇','🥈','🥉'];
+  rafflePicked.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'winner-item';
+    item.innerHTML = `
+      <span class="winner-medal">${raffleMode === 'pick' ? (medals[i] || '🎟️') : '💥'}</span>
+      <div class="winner-item-right">
+        <div class="winner-thumb">${p.photo ? `<img src="${p.photo}">` : (raffleMode === 'pick' ? '🎟️' : '✖️')}</div>
+        <div>
+          <div class="winner-name${raffleMode === 'eliminate' ? ' eliminated' : ''}">${p.name}</div>
+          ${p.phone ? `<a href="tel:${p.phone}" class="winner-phone-link">📞 ${p.phone}</a>` : ''}
+        </div>
+      </div>
+      <span class="winner-num">#${i+1}</span>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function renderDoneList() {
+  const container = document.getElementById('done-list');
+  container.innerHTML = '';
+  if (!rafflePicked.length) return;
+  const medals = ['🥇','🥈','🥉'];
+  rafflePicked.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'winner-item';
+    item.innerHTML = `
+      <span class="winner-medal">${raffleMode === 'pick' ? (medals[i] || '🎟️') : '💥'}</span>
+      <div class="winner-item-right">
+        <div class="winner-thumb">${p.photo ? `<img src="${p.photo}">` : '🎟️'}</div>
+        <div>
+          <div class="winner-name">${p.name}</div>
+          ${p.phone ? `<a href="tel:${p.phone}" class="winner-phone-link">📞 ${p.phone}</a>` : ''}
+        </div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+// Init 3 rows
+addParticipantRow(); addParticipantRow(); addParticipantRow();
+
+// ================================================================
+// LOTTERY SUB-TABS
+// ================================================================
+function showLotterySub(name, btn) {
+  document.querySelectorAll('.lottery-sub-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.lottery-sub-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('lottery-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ================================================================
+// WEIGHTED LOTTERY
+// ================================================================
+let wlParticipants = [];
+
+function initWL() {
+  for (let i = 0; i < 3; i++) addWLRow();
+}
+
+function addWLRow(name = '', phone = '', shares = 1) {
+  const id = uid();
+  wlParticipants.push({ id, name, phone, shares });
+  renderWLList();
+}
+
+function renderWLList() {
+  const list = document.getElementById('wl-list');
+  list.innerHTML = '';
+  const total = wlParticipants.reduce((s, p) => s + (parseInt(p.shares)||0), 0);
+  document.getElementById('wl-total-shares').textContent = `مجموع: ${total} سهم`;
+
+  wlParticipants.forEach(p => {
+    const pct = total ? ((parseInt(p.shares)||0) / total * 100).toFixed(1) : 0;
+    const row = document.createElement('div');
+    row.className = 'wl-row';
+    row.innerHTML = `
+      <input class="wl-name" placeholder="نام" value="${p.name}" oninput="updateWL('${p.id}','name',this.value)">
+      <input class="wl-phone" placeholder="📞 شماره" value="${p.phone||''}" oninput="updateWL('${p.id}','phone',this.value)" type="tel">
+      <input class="wl-shares" type="number" min="1" max="100" value="${p.shares}" oninput="updateWL('${p.id}','shares',this.value)">
+      <span class="wl-pct">${pct}٪</span>
+      <button class="del-btn" onclick="removeWL('${p.id}')">✕</button>
+    `;
+    list.appendChild(row);
+  });
+
+  // Probability bars
+  const probList = document.getElementById('wl-prob-items');
+  const probCard = document.getElementById('wl-prob-list');
+  if (wlParticipants.filter(p => p.name.trim()).length >= 2) {
+    probCard.classList.remove('hidden');
+    probList.innerHTML = '';
+    wlParticipants.filter(p => p.name.trim()).forEach(p => {
+      const pct = total ? ((parseInt(p.shares)||0) / total * 100) : 0;
+      probList.innerHTML += `
+        <div class="prob-row" style="margin-bottom:8px">
+          <span class="prob-label">${p.name}</span>
+          <div class="prob-bar-wrap">
+            <div class="prob-bar"><div class="prob-fill" style="width:${pct}%"></div></div>
+            <div style="font-size:11px;color:var(--cyan);text-align:left">${pct.toFixed(1)}٪ (${p.shares} سهم)</div>
+          </div>
+        </div>
+      `;
+    });
+  } else {
+    probCard.classList.add('hidden');
+  }
+
+  const valid = wlParticipants.filter(p => p.name.trim()).length;
+  document.getElementById('wl-draw-btn').disabled = valid < 2;
+}
+
+function updateWL(id, key, val) {
+  const p = wlParticipants.find(x => x.id === id);
+  if (p) { p[key] = key === 'shares' ? Math.max(1, parseInt(val)||1) : val; }
+  renderWLList();
+}
+
+function removeWL(id) {
+  wlParticipants = wlParticipants.filter(p => p.id !== id);
+  renderWLList();
+}
+
+function runWeightedDraw() {
+  const valid = wlParticipants.filter(p => p.name.trim() && (parseInt(p.shares)||0) > 0);
+  if (valid.length < 2) return;
+
+  const total = valid.reduce((s, p) => s + parseInt(p.shares), 0);
+  let r = Math.random() * total;
+  let winner = valid[0];
+  for (const p of valid) {
+    r -= parseInt(p.shares);
+    if (r <= 0) { winner = p; break; }
+  }
+
+  const pct = (parseInt(winner.shares) / total * 100).toFixed(1);
+  const resultEl = document.getElementById('wl-result');
+  resultEl.classList.remove('hidden');
+  resultEl.innerHTML = `
+    <div style="font-size:11px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">🏆 برنده</div>
+    <div class="wl-winner-name bounce-in">${winner.name}</div>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:10px">${winner.shares} سهم از ${total} — احتمال: ${pct}٪</div>
+    ${winner.phone ? `<a href="tel:${winner.phone}" class="call-btn">📞 ${winner.phone}</a>` : ''}
+  `;
+  launchConfetti(true);
+}
+
+initWL();
+
+// ================================================================
+// SPINNING WHEEL
+// ================================================================
+let wheelNames = [];
+let wheelSpinning = false;
+let wheelAngle = 0;
+let wheelVelocity = 0;
+let wheelAnimId = null;
+
+function buildWheel() {
+  const text = document.getElementById('wheel-names').value;
+  wheelNames = text.split('\n').map(s => s.trim()).filter(Boolean);
+  if (wheelNames.length < 2) { alert('حداقل ۲ اسم وارد کن'); return; }
+  drawWheel(0);
+  document.getElementById('spin-wheel-btn').disabled = false;
+  document.getElementById('wheel-result').classList.add('hidden');
+}
+
+function drawWheel(angle) {
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+  const cx = 150, cy = 150, r = 140;
+  const n = wheelNames.length;
+  const arc = (2 * Math.PI) / n;
+  const colors = ['#fbbf24','#ec4899','#a855f7','#22d3ee','#ef4444','#22c55e','#f97316','#06b6d4','#8b5cf6','#f43f5e'];
+
+  ctx.clearRect(0, 0, 300, 300);
+
+  for (let i = 0; i < n; i++) {
+    const startA = angle + i * arc;
+    const endA = startA + arc;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startA, endA);
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.strokeStyle = '#0a0a0f';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(startA + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.min(14, 110 / n + 6)}px Vazirmatn, sans-serif`;
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.fillText(wheelNames[i].length > 8 ? wheelNames[i].slice(0,8)+'…' : wheelNames[i], r - 10, 5);
+    ctx.restore();
+  }
+
+  // Center
+  ctx.beginPath();
+  ctx.arc(cx, cy, 14, 0, 2*Math.PI);
+  ctx.fillStyle = '#1a1a26';
+  ctx.fill();
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+function spinWheel() {
+  if (wheelSpinning || !wheelNames.length) return;
+  wheelSpinning = true;
+  wheelVelocity = Math.random() * 0.2 + 0.25;
+  document.getElementById('wheel-result').classList.add('hidden');
+  animateWheel();
+}
+
+function animateWheel() {
+  wheelAngle += wheelVelocity;
+  wheelVelocity *= 0.986;
+  drawWheel(wheelAngle);
+
+  if (wheelVelocity > 0.002) {
+    wheelAnimId = requestAnimationFrame(animateWheel);
+  } else {
+    wheelSpinning = false;
+    const n = wheelNames.length;
+    const arc = (2 * Math.PI) / n;
+    // Pointer is at top (−π/2), normalize
+    const norm = ((-wheelAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+    const idx = Math.floor(norm / arc) % n;
+    const winner = wheelNames[idx];
+
+    const resEl = document.getElementById('wheel-result');
+    resEl.classList.remove('hidden');
+    resEl.innerHTML = `<div style="font-size:14px;color:var(--muted);margin-bottom:8px">🎡 برنده چرخ شانس</div><div class="wheel-winner bounce-in">${winner}</div>`;
+    launchConfetti(true);
+  }
+}
+
+// ================================================================
+// DICE
+// ================================================================
+function initDice() {
+  renderDice();
+}
+
+function renderDice() {
+  const count = parseInt(document.getElementById('dice-count').value) || 2;
+  const faces = document.getElementById('dice-faces');
+  faces.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const die = document.createElement('div');
+    die.className = 'die';
+    die.id = 'die-' + i;
+    die.innerHTML = '<span class="die-val">?</span>';
+    faces.appendChild(die);
+  }
+  document.getElementById('dice-sum').classList.add('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('dice-count').addEventListener('input', renderDice);
+});
+
+setTimeout(initDice, 0);
+
+function rollDice() {
+  const count = parseInt(document.getElementById('dice-count').value) || 2;
+  const size = parseInt(document.getElementById('dice-size').value) || 6;
+  const btn = document.getElementById('roll-btn');
+  btn.disabled = true;
+
+  const results = [];
+  let ticks = 0;
+  const maxTicks = 20;
+
+  const symbols = {6: ['⚀','⚁','⚂','⚃','⚄','⚅'], other: null};
+
+  const interval = setInterval(() => {
+    for (let i = 0; i < count; i++) {
+      const die = document.getElementById('die-' + i);
+      if (!die) continue;
+      die.classList.add('rolling');
+      const rand = Math.floor(Math.random() * size) + 1;
+      const s = size === 6 ? symbols[6][rand-1] : rand;
+      die.querySelector('.die-val').textContent = s;
+    }
+    ticks++;
+    if (ticks >= maxTicks) {
+      clearInterval(interval);
+      let sum = 0;
+      for (let i = 0; i < count; i++) {
+        const r = Math.floor(Math.random() * size) + 1;
+        results.push(r);
+        sum += r;
+        const die = document.getElementById('die-' + i);
+        if (!die) continue;
+        die.classList.remove('rolling');
+        const s = size === 6 ? symbols[6][r-1] : r;
+        die.querySelector('.die-val').textContent = s;
+      }
+      const sumEl = document.getElementById('dice-sum');
+      if (count > 1) {
+        sumEl.textContent = `مجموع: ${sum}`;
+        sumEl.classList.remove('hidden');
+      }
+      btn.disabled = false;
+    }
+  }, 80);
+}
+
+// ================================================================
+// MULTI-STAGE LOTTERY
+// ================================================================
+let multiState = null;
+
+function startMultiStage() {
+  const names = document.getElementById('multi-names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if (names.length < 3) { alert('حداقل ۳ نفر وارد کن'); return; }
+
+  // Calculate stages: each stage picks ~1/3 to pass through
+  const stages = [];
+  let cur = [...names];
+  while (cur.length > 1) {
+    const next = Math.max(1, Math.floor(cur.length / 3));
+    stages.push({ pool: shuffle(cur), next, winners: [] });
+    cur = cur.slice(0, next);
+    if (next === 1) break;
+  }
+
+  multiState = { stages, currentStage: 0, allWinners: [] };
+  renderMultiStage();
+  document.getElementById('multi-start-btn').classList.add('hidden');
+}
+
+function renderMultiStage() {
+  const { stages, currentStage } = multiState;
+
+  // Visual
+  const visual = document.getElementById('stages-visual');
+  visual.classList.remove('hidden');
+  visual.innerHTML = stages.map((s, i) => {
+    let cls = 'stage-bubble';
+    if (i < currentStage) cls += ' done-stage';
+    else if (i === currentStage) cls += ' active-stage';
+    return `<span class="${cls}">مرحله ${i+1}<br><small style="font-size:10px">${s.next} برنده</small></span>${i < stages.length-1 ? '<span class="stage-arrow">→</span>' : ''}`;
+  }).join('');
+
+  const box = document.getElementById('multi-stage-box');
+  if (currentStage >= stages.length) {
+    const all = multiState.allWinners;
+    box.innerHTML = `
+      <div class="card text-center" style="padding:32px">
+        <div style="font-size:48px;margin-bottom:12px">🏆</div>
+        <div style="font-size:22px;font-weight:900;color:var(--gold);margin-bottom:8px">${all[all.length-1] || ''}</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:16px">برنده نهایی از ${stages[0].pool.length} نفر</div>
+        <button class="draw-btn" onclick="resetMultiStage()">🔄 شروع مجدد</button>
+      </div>
+    `;
+    launchConfetti(true);
+    return;
+  }
+
+  const stage = stages[currentStage];
+  const pct = (stage.next / stage.pool.length * 100).toFixed(0);
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label">مرحله ${currentStage+1} — انتخاب ${stage.next} برنده از ${stage.pool.length} نفر</span>
+        <span style="color:var(--purple);font-size:12px">احتمال: ${pct}٪</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+        ${stage.pool.map(n=>`<span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:4px 10px;font-size:13px;color:var(--purple)">${n}</span>`).join('')}
+      </div>
+      <button class="draw-btn" onclick="runMultiStage()" style="background:linear-gradient(135deg,var(--purple),#7c3aed)">🎲 اجرای مرحله ${currentStage+1}</button>
+    </div>
+  `;
+}
+
+function runMultiStage() {
+  const stage = multiState.stages[multiState.currentStage];
+  const winners = shuffle(stage.pool).slice(0, stage.next);
+  stage.winners = winners;
+  multiState.allWinners.push(...winners);
+  multiState.currentStage++;
+
+  if (multiState.currentStage < multiState.stages.length) {
+    multiState.stages[multiState.currentStage].pool = shuffle(winners);
+  }
+
+  launchConfetti(multiState.currentStage >= multiState.stages.length);
+  renderMultiStage();
+}
+
+function resetMultiStage() {
+  multiState = null;
+  document.getElementById('multi-start-btn').classList.remove('hidden');
+  document.getElementById('stages-visual').classList.add('hidden');
+  document.getElementById('multi-stage-box').innerHTML = '';
+}
+
+// ================================================================
+// GAMBLE SUB-TABS
+// ================================================================
+function showGambleSub(name, btn) {
+  document.querySelectorAll('.gamble-sub-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.gamble-sub-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('gamble-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ================================================================
+// SLOTS
+// ================================================================
+const SLOT_SYMBOLS = ['🍒','🍋','🔔','⭐','💎','7️⃣','🍊','🍇'];
+let slotsScore = 0;
+let slotsSpinning = false;
+
+function initSlots() {
+  const reels = document.getElementById('slots-reels');
+  reels.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const win = document.createElement('div');
+    win.className = 'reel-window';
+    win.id = 'reel-' + i;
+    win.innerHTML = `<span class="reel-symbol">${SLOT_SYMBOLS[Math.floor(Math.random()*SLOT_SYMBOLS.length)]}</span>`;
+    reels.appendChild(win);
+  }
+}
+
+setTimeout(initSlots, 0);
+
+function spinSlots() {
+  if (slotsSpinning) return;
+  slotsSpinning = true;
+  document.getElementById('slots-btn').disabled = true;
+  document.getElementById('slots-result').textContent = '🎰 ...';
+  document.getElementById('slots-result').className = 'slots-result';
+
+  const results = [];
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('reel-' + i).classList.add('reel-spinning');
+    results.push(SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]);
+  }
+
+  setTimeout(() => {
+    for (let i = 0; i < 3; i++) {
+      const reel = document.getElementById('reel-' + i);
+      reel.classList.remove('reel-spinning');
+      reel.querySelector('.reel-symbol').textContent = results[i];
+    }
+
+    const isWin = results[0] === results[1] && results[1] === results[2];
+    const isTwoMatch = results[0] === results[1] || results[1] === results[2] || results[0] === results[2];
+    const resEl = document.getElementById('slots-result');
+
+    if (isWin) {
+      slotsScore += 100;
+      resEl.textContent = '🎉 برد! +100 امتیاز';
+      resEl.className = 'slots-result win';
+      launchConfetti(true);
+    } else if (isTwoMatch) {
+      slotsScore += 10;
+      resEl.textContent = '✨ تقریباً! +10 امتیاز';
+      resEl.className = 'slots-result win';
+    } else {
+      slotsScore -= 5;
+      resEl.textContent = '❌ باختی! −5 امتیاز';
+      resEl.className = 'slots-result lose';
+    }
+
+    document.getElementById('slots-score').textContent = slotsScore;
+    slotsSpinning = false;
+    document.getElementById('slots-btn').disabled = false;
+  }, 1200);
+}
+
+// ================================================================
+// RISK GAME
+// ================================================================
+let riskState = null;
+
+const PRIZES = ['✏️ مداد','📒 دفتر','📚 کتاب','🎁 جایزه کوچک','🏆 جایزه بزرگ','🌟 جایزه ویژه'];
+
+function startRiskGame() {
+  const names = document.getElementById('risk-names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if (names.length < 2) { alert('حداقل ۲ نفر'); return; }
+
+  riskState = {
+    players: shuffle(names).map(n => ({ name: n, prize: PRIZES[0], stage: 0, out: false })),
+    currentPlayer: 0,
+    stage: 0,
+    log: []
+  };
+
+  document.getElementById('risk-setup-div').classList.add('hidden');
+  document.getElementById('risk-game-div').classList.remove('hidden');
+  renderRiskGame();
+}
+
+function renderRiskGame() {
+  if (!riskState) return;
+  const { players, currentPlayer, stage } = riskState;
+  const active = players.filter(p => !p.out);
+
+  if (active.length === 0) {
+    document.getElementById('risk-status').innerHTML = `<div style="font-size:20px;font-weight:900;color:var(--gold)">🏁 بازی تمام شد!</div>`;
+    document.getElementById('risk-control').innerHTML = `<button class="draw-btn" onclick="resetRiskGame()" style="background:linear-gradient(135deg,#ef4444,#f97316)">🔄 شروع مجدد</button>`;
+    renderRiskLog();
+    return;
+  }
+
+  const p = players[currentPlayer];
+  if (!p || p.out) {
+    // find next
+    let next = (currentPlayer + 1) % players.length;
+    while (players[next].out && next !== currentPlayer) next = (next + 1) % players.length;
+    riskState.currentPlayer = next;
+    renderRiskGame();
+    return;
+  }
+
+  const nextPrize = PRIZES[Math.min(p.stage + 1, PRIZES.length - 1)];
+
+  document.getElementById('risk-status').innerHTML = `
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px">${p.name}</div>
+    <div class="current-prize">${p.prize}</div>
+    <div style="color:var(--muted);font-size:13px;margin-top:6px">جایزه بعدی (اگر ببری): <span style="color:var(--gold)">${nextPrize}</span></div>
+    <div style="color:var(--muted);font-size:12px">احتمال برد: ${Math.max(20, 70 - p.stage * 10)}٪</div>
+  `;
+
+  document.getElementById('risk-control').innerHTML = `
+    <div class="risk-btns">
+      <button class="take-btn" onclick="takeRisk(false)">✅ نگه دار<br><small>${p.prize}</small></button>
+      <button class="risk-btn" onclick="takeRisk(true)">🎲 ریسک کن<br><small>→ ${nextPrize}؟</small></button>
+    </div>
+  `;
+
+  renderRiskLog();
+}
+
+function takeRisk(doRisk) {
+  if (!riskState) return;
+  const { players, currentPlayer } = riskState;
+  const p = players[currentPlayer];
+
+  if (!doRisk) {
+    riskState.log.push(`✅ ${p.name} جایزه «${p.prize}» را نگه داشت`);
+    p.out = true;
+  } else {
+    const winChance = Math.max(20, 70 - p.stage * 10) / 100;
+    const won = Math.random() < winChance;
+    if (won) {
+      p.stage++;
+      p.prize = PRIZES[Math.min(p.stage, PRIZES.length - 1)];
+      riskState.log.push(`🎉 ${p.name} برد! جایزه جدید: «${p.prize}»`);
+      if (p.stage >= PRIZES.length - 1) {
+        riskState.log.push(`🏆 ${p.name} به بالاترین مرحله رسید!`);
+        p.out = true;
+        launchConfetti(true);
+      }
+    } else {
+      riskState.log.push(`💥 ${p.name} باخت! همه چیز از دست رفت.`);
+      p.prize = '❌';
+      p.out = true;
+    }
+  }
+
+  // next player
+  let next = (currentPlayer + 1) % players.length;
+  let tries = 0;
+  while (players[next].out && tries < players.length) { next = (next+1) % players.length; tries++; }
+  riskState.currentPlayer = next;
+  renderRiskGame();
+}
+
+function resetRiskGame() {
+  riskState = null;
+  document.getElementById('risk-setup-div').classList.remove('hidden');
+  document.getElementById('risk-game-div').classList.add('hidden');
+}
+
+function renderRiskLog() {
+  const log = document.getElementById('risk-log');
+  if (!riskState || !riskState.log.length) { log.innerHTML = ''; return; }
+  log.innerHTML = '<div class="card-label" style="margin-bottom:8px">وقایع بازی:</div>' +
+    riskState.log.slice(-8).reverse().map(l => `<div style="font-size:12px;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--border)">${l}</div>`).join('');
+}
+
+// ================================================================
+// TIMED GAME
+// ================================================================
+let timedState = null;
+let timedTimer = null;
+
+function startTimedGame() {
+  const names = document.getElementById('timed-names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if (names.length < 3) { alert('حداقل ۳ نفر'); return; }
+
+  timedState = {
+    pool: shuffle(names),
+    eliminated: [],
+    phase: 'idle'
+  };
+
+  document.getElementById('timed-setup').classList.add('hidden');
+  document.getElementById('timed-game').classList.remove('hidden');
+  renderTimedGame();
+}
+
+function renderTimedGame() {
+  const game = document.getElementById('timed-game');
+  if (!timedState) { game.innerHTML = ''; return; }
+  const { pool, eliminated } = timedState;
+
+  if (pool.length === 1) {
+    game.innerHTML = `
+      <div class="card text-center" style="padding:32px">
+        <div style="font-size:48px">🏆</div>
+        <div style="font-size:28px;font-weight:900;color:var(--gold);margin:12px 0">${pool[0]}</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:16px">برنده نهایی با تصمیم‌گیری‌های سریع!</div>
+        <button class="draw-btn" onclick="resetTimedGame()" style="background:linear-gradient(135deg,var(--purple),#7c3aed)">🔄 شروع مجدد</button>
+      </div>
+    `;
+    launchConfetti(true);
+    return;
+  }
+
+  game.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-label">${pool.length} نفر باقی‌مانده</span>
+        <span style="font-size:12px;color:var(--muted)">${eliminated.length} حذف شده</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+        ${pool.map(n=>`<span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:5px 12px;font-size:13px;color:var(--purple)">${n}</span>`).join('')}
+      </div>
+      <div id="timed-countdown" style="text-align:center;margin-bottom:12px">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+          <circle id="timer-ring-circle" cx="40" cy="40" r="34" fill="none" stroke="#a855f7" stroke-width="6" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6" transform="rotate(-90 40 40)"/>
+          <text id="timer-ring-text" x="40" y="47" text-anchor="middle" font-size="22" font-weight="900" fill="#fbbf24" font-family="Vazirmatn,sans-serif">5</text>
+        </svg>
+      </div>
+      <div id="timed-pick-display" style="text-align:center;min-height:60px;margin-bottom:12px"></div>
+      <button class="draw-btn" id="timed-spin-btn" onclick="timedSpin()" style="background:linear-gradient(135deg,var(--purple),#7c3aed)">⚡ انتخاب + شمارش</button>
+    </div>
+  `;
+}
+
+function timedSpin() {
+  if (!timedState || timedState.phase === 'countdown') return;
+  timedState.phase = 'countdown';
+
+  const picked = shuffle(timedState.pool)[0];
+  document.getElementById('timed-spin-btn').disabled = true;
+  document.getElementById('timed-pick-display').innerHTML = `
+    <div style="font-size:24px;font-weight:900;color:var(--purple)">💥 ${picked}</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px">آیا این نفر باید حذف شود؟ چند ثانیه وقت داری!</div>
+  `;
+
+  let t = 5;
+  const circle = document.getElementById('timer-ring-circle');
+  const text = document.getElementById('timer-ring-text');
+  const total = 213.6;
+
+  const tick = () => {
+    if (!circle || !text) return;
+    text.textContent = t;
+    circle.setAttribute('stroke-dashoffset', total - (total * (5 - t) / 5));
+    if (t <= 0) {
+      // auto-eliminate
+      timedEliminate(picked);
+      return;
+    }
+    t--;
+    timedTimer = setTimeout(tick, 1000);
+  };
+
+  tick();
+
+  // Add confirm/skip buttons
+  setTimeout(() => {
+    const display = document.getElementById('timed-pick-display');
+    if (display) {
+      display.innerHTML += `
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+          <button onclick="clearTimeout(timedTimer);timedEliminate('${picked}')" class="risk-btn" style="font-size:13px;padding:8px 16px">💥 حذف!</button>
+          <button onclick="clearTimeout(timedTimer);timedSkip('${picked}')" class="take-btn" style="font-size:13px;padding:8px 16px">⏭️ رد شو</button>
+        </div>
+      `;
+    }
+  }, 100);
+}
+
+function timedEliminate(name) {
+  timedState.pool = timedState.pool.filter(n => n !== name);
+  timedState.eliminated.push(name);
+  timedState.phase = 'idle';
+  renderTimedGame();
+}
+
+function timedSkip(name) {
+  timedState.phase = 'idle';
+  renderTimedGame();
+}
+
+function resetTimedGame() {
+  if (timedTimer) clearTimeout(timedTimer);
+  timedState = null;
+  document.getElementById('timed-setup').classList.remove('hidden');
+  document.getElementById('timed-game').classList.add('hidden');
+  document.getElementById('timed-game').innerHTML = '';
+}
+
+// ================================================================
+// EDUCATION TABS
+// ================================================================
+function showEduSub(name, btn) {
+  document.querySelectorAll('.edu-sub-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.edu-sub-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('edu-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Probability chart demo
+function buildProbChart() {
+  const container = document.getElementById('prob-chart-demo');
+  if (!container) return;
+  const stages = [
+    { label: 'مرحله ۱', prob: 50 },
+    { label: 'مرحله ۲', prob: 33 },
+    { label: 'مرحله ۳', prob: 10 },
+    { label: 'نهایی', prob: 3.3 },
+  ];
+  container.innerHTML = stages.map(s => `
+    <div class="prob-row">
+      <span class="prob-label">${s.label}</span>
+      <div class="prob-bar-wrap">
+        <div class="prob-bar"><div class="prob-fill" style="width:${s.prob}%"></div></div>
+        <div style="font-size:11px;color:var(--cyan);text-align:left">${s.prob}٪</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+setTimeout(buildProbChart, 100);
+
+// Quiz
+function checkQuiz(btn, correct, qid) {
+  const btns = btn.parentElement.querySelectorAll('.quiz-option');
+  btns.forEach(b => b.disabled = true);
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) {
+    btns.forEach(b => { if (b !== btn) b.style.opacity = '0.4'; });
+  } else {
+    btns.forEach(b => {
+      if (b.getAttribute('onclick').includes('true')) b.classList.add('correct');
+    });
+  }
+  const fb = document.getElementById(qid + '-feedback');
+  fb.classList.add('show');
+  fb.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    fb.textContent = '❌ اشتباه! ' + fb.textContent.replace('✅ ', '');
+    fb.textContent = '❌ جواب درست را ببین 👆';
+  }
+}
+</script>
+</body>
+</html>
